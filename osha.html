@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSHA Requirements - Cheeky Soap Facility</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7; 
+            color: #1d1d1f;
+            line-height: 1.6;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 12px;
+            z-index: 100;
+            border-bottom: 1px solid #d2d2d7;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .header h1 { font-size: 15px; font-weight: 600; color: #1d1d1f; }
+        .header a {
+            background: #007aff;
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .header a:hover { background: #0056b3; }
+        .container {
+            max-width: 900px;
+            margin: 76px auto 40px;
+            padding: 0 20px;
+        }
+        .hero {
+            background: linear-gradient(135deg, #ff9500, #ff3b30);
+            color: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+        .hero h1 { font-size: 28px; margin-bottom: 8px; }
+        .hero p { opacity: 0.9; font-size: 15px; }
+        .meta { font-size: 12px; opacity: 0.8; margin-top: 16px; }
+        
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+            font-size: 18px;
+            color: #1d1d1f;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e5e7;
+        }
+        .card h3 {
+            font-size: 14px;
+            color: #1d1d1f;
+            margin: 20px 0 10px;
+        }
+        .card h3:first-of-type { margin-top: 0; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 12px 0;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e7;
+        }
+        th {
+            background: #f5f5f7;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+        tr:hover { background: #fafafa; }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-red { background: #ffebee; color: #c62828; }
+        .badge-orange { background: #fff3e0; color: #e65100; }
+        .badge-green { background: #e8f5e9; color: #2e7d32; }
+        .badge-blue { background: #e3f2fd; color: #1565c0; }
+        
+        .checklist { list-style: none; }
+        .checklist li {
+            padding: 8px 0;
+            padding-left: 28px;
+            position: relative;
+            border-bottom: 1px solid #f5f5f7;
+        }
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            color: #86868b;
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+        .alert-danger {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        .alert-warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .equipment-item {
+            background: #f5f5f7;
+            padding: 14px;
+            border-radius: 8px;
+        }
+        .equipment-item .name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+        .equipment-item .spec { font-size: 11px; color: #86868b; }
+        .equipment-item .qty { font-size: 12px; color: #007aff; margin-top: 6px; }
+        
+        .toc {
+            background: #f5f5f7;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .toc h3 { margin-bottom: 12px; font-size: 14px; }
+        .toc ul { list-style: none; columns: 2; }
+        .toc li { padding: 6px 0; }
+        .toc a { color: #007aff; text-decoration: none; font-size: 13px; }
+        .toc a:hover { text-decoration: underline; }
+        
+        .diagram {
+            background: #1d1d1f;
+            color: #86868b;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 11px;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 600px) {
+            .toc ul { columns: 1; }
+            .equipment-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧼 Cheeky Floor Plan</h1>
+        <a href="/">← Back to Floor Plan</a>
+    </div>
+    
+    <div class="container">
+        <div class="hero">
+            <h1>⚠️ OSHA Safety Requirements</h1>
+            <p>Cold Process Soap Manufacturing Facility — Pittsburgh, PA | ~4,700 sq ft</p>
+            <div class="meta">Document Version 1.0 | Last Updated: January 2026</div>
+        </div>
+        
+        <div class="toc">
+            <h3>📑 Quick Navigation</h3>
+            <ul>
+                <li><a href="#summary">Executive Summary</a></li>
+                <li><a href="#eyewash">Eye Wash & Shower</a></li>
+                <li><a href="#fire">Fire Extinguishers</a></li>
+                <li><a href="#firstaid">First Aid</a></li>
+                <li><a href="#chemical">Chemical Storage</a></li>
+                <li><a href="#ppe">PPE Requirements</a></li>
+                <li><a href="#exits">Emergency Exits</a></li>
+                <li><a href="#equipment">Equipment List</a></li>
+                <li><a href="#placement">Placement Guidelines</a></li>
+                <li><a href="#checklist">Compliance Checklist</a></li>
+            </ul>
+        </div>
+        
+        <div class="card" id="summary">
+            <h2>📋 Executive Summary</h2>
+            <p>Cold process soap making involves handling <strong>sodium hydroxide (lye)</strong> — a highly corrosive substance — along with oils and essential oils (some flammable), requiring robust safety protocols.</p>
+            
+            <h3>Critical Requirements</h3>
+            <table>
+                <tr>
+                    <th>Requirement</th>
+                    <th>Specification</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>Eye wash stations</td>
+                    <td>Within 10 seconds (~55 feet) of lye handling</td>
+                    <td><span class="badge badge-red">MANDATORY</span></td>
+                </tr>
+                <tr>
+                    <td>Emergency shower</td>
+                    <td>Within 10 seconds of lye handling</td>
+                    <td><span class="badge badge-red">MANDATORY</span></td>
+                </tr>
+                <tr>
+                    <td>Fire extinguishers</td>
+                    <td>Every 75 feet (Class A) / 50 feet (Class B)</td>
+                    <td><span class="badge badge-red">MANDATORY</span></td>
+                </tr>
+                <tr>
+                    <td>Emergency exits</td>
+                    <td>Minimum 2 exits, located far apart</td>
+                    <td><span class="badge badge-red">MANDATORY</span></td>
+                </tr>
+                <tr>
+                    <td>First aid supplies</td>
+                    <td>Readily available, trained personnel</td>
+                    <td><span class="badge badge-red">MANDATORY</span></td>
+                </tr>
+                <tr>
+                    <td>Flammable storage</td>
+                    <td>Approved cabinet for essential oils</td>
+                    <td><span class="badge badge-orange">REQUIRED</span></td>
+                </tr>
+                <tr>
+                    <td>SDS sheets</td>
+                    <td>Accessible within each work shift</td>
+                    <td><span class="badge badge-red">MANDATORY</span></td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="card" id="eyewash">
+            <h2>👁️ Emergency Eye Wash & Shower (29 CFR 1910.151)</h2>
+            
+            <div class="alert alert-danger">
+                <strong>⚠️ CRITICAL:</strong> Sodium hydroxide is a severe corrosive. Eye wash and emergency shower are MANDATORY when handling lye.
+            </div>
+            
+            <h3>The 10-Second Rule</h3>
+            <p>Eye wash/shower must be within <strong>10 seconds walking distance (~55 feet)</strong> of lye handling area with NO obstructions in the path.</p>
+            
+            <h3>Eye Wash Station Requirements (ANSI Z358.1)</h3>
+            <table>
+                <tr><th>Specification</th><th>Requirement</th></tr>
+                <tr><td>Location</td><td>Within 10 seconds travel time (~55 feet unobstructed)</td></tr>
+                <tr><td>Water flow</td><td>Minimum 0.4 gallons per minute (GPM)</td></tr>
+                <tr><td>Duration</td><td>Minimum 15 minutes continuous flow</td></tr>
+                <tr><td>Height</td><td>Nozzles 33-53 inches from floor</td></tr>
+                <tr><td>Water temperature</td><td>Tepid: 60-100°F (16-38°C)</td></tr>
+                <tr><td>Activation</td><td>Single motion, hands-free operation</td></tr>
+            </table>
+            
+            <h3>Emergency Shower Requirements</h3>
+            <table>
+                <tr><th>Specification</th><th>Requirement</th></tr>
+                <tr><td>Water flow</td><td>Minimum 20 GPM</td></tr>
+                <tr><td>Duration</td><td>Minimum 15 minutes continuous flow</td></tr>
+                <tr><td>Spray diameter</td><td>Minimum 20 inches at 60 inches height</td></tr>
+                <tr><td>Activation</td><td>Single motion (pull rod/lever), stays on</td></tr>
+            </table>
+            
+            <h3>Recommended: Combination Unit</h3>
+            <p>For soap facilities, a combination eye wash/shower unit is recommended.</p>
+            <table>
+                <tr><th>Dimension</th><th>Measurement</th></tr>
+                <tr><td>Height</td><td>84-96 inches</td></tr>
+                <tr><td>Width</td><td>30-36 inches</td></tr>
+                <tr><td>Depth</td><td>24-30 inches</td></tr>
+                <tr><td>Floor drain area</td><td>30 × 30 inches minimum</td></tr>
+            </table>
+            
+            <h3>Maintenance Schedule</h3>
+            <table>
+                <tr><th>Task</th><th>Frequency</th></tr>
+                <tr><td>Activate plumbed units</td><td>Weekly (flush 3 minutes)</td></tr>
+                <tr><td>Visual inspection</td><td>Weekly</td></tr>
+                <tr><td>Water temperature check</td><td>Monthly</td></tr>
+                <tr><td>Annual inspection</td><td>Per manufacturer guidelines</td></tr>
+            </table>
+        </div>
+        
+        <div class="card" id="fire">
+            <h2>🧯 Fire Extinguisher Requirements (29 CFR 1910.157)</h2>
+            
+            <h3>Fire Classes in Your Facility</h3>
+            <table>
+                <tr><th>Class</th><th>Materials</th><th>Present?</th></tr>
+                <tr><td><strong>Class A</strong></td><td>Ordinary combustibles (paper, wood, cloth)</td><td>Yes - packaging, pallets</td></tr>
+                <tr><td><strong>Class B</strong></td><td>Flammable liquids (oils, solvents)</td><td>Yes - essential oils, carrier oils</td></tr>
+                <tr><td><strong>Class C</strong></td><td>Electrical equipment</td><td>Yes - mixers, heating equipment</td></tr>
+            </table>
+            
+            <div class="alert alert-info">
+                <strong>Recommendation:</strong> ABC-rated multi-purpose dry chemical extinguishers cover all three classes.
+            </div>
+            
+            <h3>Distribution for 4,700 sq ft</h3>
+            <table>
+                <tr><th>Extinguisher Type</th><th>Size</th><th>Quantity</th><th>Max Travel Distance</th></tr>
+                <tr><td>ABC Dry Chemical</td><td>10 lb (4A:60B:C)</td><td>3-4 units</td><td>75 feet (Class A)</td></tr>
+                <tr><td>Additional near essential oils</td><td>10 lb</td><td>1 unit</td><td>50 feet (Class B hazard)</td></tr>
+            </table>
+            
+            <h3>Mounting & Identification</h3>
+            <table>
+                <tr><th>Requirement</th><th>Specification</th></tr>
+                <tr><td>Mounting height</td><td>Handle 3.5-5 feet from floor</td></tr>
+                <tr><td>Signage</td><td>Visible identification signs</td></tr>
+                <tr><td>Obstruction</td><td>Must be readily accessible, unobstructed</td></tr>
+            </table>
+            
+            <h3>Inspection Schedule</h3>
+            <table>
+                <tr><th>Task</th><th>Frequency</th></tr>
+                <tr><td>Visual inspection</td><td>Monthly</td></tr>
+                <tr><td>Annual maintenance</td><td>Annually (professional service)</td></tr>
+                <tr><td>6-year maintenance</td><td>Every 6 years (dry chemical)</td></tr>
+                <tr><td>Hydrostatic testing</td><td>Every 5-12 years</td></tr>
+            </table>
+        </div>
+        
+        <div class="card" id="firstaid">
+            <h2>🏥 First Aid Requirements (29 CFR 1910.151)</h2>
+            
+            <h3>Basic Requirements</h3>
+            <ul class="checklist">
+                <li>Ready availability of medical personnel for advice/consultation</li>
+                <li>Trained first aid person(s) on site if no nearby medical facility</li>
+                <li>Adequate first aid supplies readily available</li>
+                <li>Minimum one trained first aid provider per shift</li>
+            </ul>
+            
+            <h3>First Aid Kit Contents (ANSI Z308.1)</h3>
+            <table>
+                <tr><th>Item</th><th>Min Qty</th></tr>
+                <tr><td>Adhesive bandages (1" × 3")</td><td>16</td></tr>
+                <tr><td>Adhesive tape (2.5 yd)</td><td>1 roll</td></tr>
+                <tr><td>Antibiotic treatment</td><td>10 packets</td></tr>
+                <tr><td>Antiseptic</td><td>10 packets</td></tr>
+                <tr><td>Breathing barrier</td><td>1</td></tr>
+                <tr><td>Burn treatment</td><td>6 packets</td></tr>
+                <tr><td>Cold pack (4" × 5")</td><td>1</td></tr>
+                <tr><td>Eye covering</td><td>2</td></tr>
+                <tr><td>Eye wash (1 fl oz)</td><td>1</td></tr>
+                <tr><td>First aid guide</td><td>1</td></tr>
+                <tr><td>Gloves (pair)</td><td>2</td></tr>
+                <tr><td>Roller bandage (2" × 4 yd)</td><td>1</td></tr>
+                <tr><td>Sterile pads (3" × 3")</td><td>4</td></tr>
+            </table>
+            
+            <h3>Additional Items for Chemical Facility</h3>
+            <table>
+                <tr><th>Item</th><th>Purpose</th></tr>
+                <tr><td>Burn gel/dressings (multiple)</td><td>Chemical burns</td></tr>
+                <tr><td>Eye wash bottles (16-32 oz) × 2+</td><td>Supplemental eye irrigation</td></tr>
+                <tr><td>Emergency blanket</td><td>Shock/hypothermia</td></tr>
+            </table>
+            
+            <h3>First Aid Station Specs</h3>
+            <table>
+                <tr><th>Dimension</th><th>Size</th></tr>
+                <tr><td>Cabinet width</td><td>14-18 inches</td></tr>
+                <tr><td>Cabinet height</td><td>18-24 inches</td></tr>
+                <tr><td>Mounting height</td><td>Eye level (48-60 inches)</td></tr>
+            </table>
+        </div>
+        
+        <div class="card" id="chemical">
+            <h2>⚗️ Chemical Storage Requirements</h2>
+            
+            <h3>Sodium Hydroxide (Lye) Storage</h3>
+            <ul class="checklist">
+                <li>Store in cool, dry, well-ventilated area</li>
+                <li>Keep containers tightly closed</li>
+                <li>Store away from acids (violent reaction)</li>
+                <li>Store away from water sources (exothermic reaction)</li>
+                <li>Use corrosion-resistant containers (HDPE, stainless steel)</li>
+                <li>Secondary containment required (110% of largest container)</li>
+                <li>Label clearly: "CORROSIVE - SODIUM HYDROXIDE"</li>
+            </ul>
+            
+            <div class="alert alert-danger">
+                <strong>⚠️ Never add water to lye!</strong> Always add lye to water slowly. Mix only in well-ventilated areas.
+            </div>
+            
+            <h3>Essential Oils - Flammable Storage (29 CFR 1910.106)</h3>
+            <table>
+                <tr><th>Essential Oil</th><th>Flash Point</th><th>Category</th></tr>
+                <tr><td>Tea Tree</td><td>131°F (55°C)</td><td>Category 3</td></tr>
+                <tr><td>Lavender</td><td>156°F (69°C)</td><td>Category 3-4</td></tr>
+                <tr><td>Peppermint</td><td>156°F (69°C)</td><td>Category 3-4</td></tr>
+                <tr><td>Eucalyptus</td><td>120°F (49°C)</td><td>Category 3</td></tr>
+                <tr><td>Citrus oils</td><td>113-122°F</td><td>Category 3</td></tr>
+            </table>
+            
+            <h3>Flammable Storage Cabinet Requirements</h3>
+            <table>
+                <tr><th>Specification</th><th>Requirement</th></tr>
+                <tr><td>Construction</td><td>18-gauge steel, double-wall</td></tr>
+                <tr><td>Liquid-tight sill</td><td>2-inch minimum</td></tr>
+                <tr><td>Doors</td><td>Self-closing required</td></tr>
+                <tr><td>Color</td><td>Yellow with "FLAMMABLE" warning</td></tr>
+            </table>
+            
+            <h3>Recommended Cabinet Sizes</h3>
+            <table>
+                <tr><th>Size</th><th>Capacity</th><th>Dimensions (W × D × H)</th></tr>
+                <tr><td>Small</td><td>12 gallon</td><td>23" × 18" × 35"</td></tr>
+                <tr><td>Medium</td><td>30 gallon</td><td>43" × 18" × 44"</td></tr>
+                <tr><td>Large</td><td>45 gallon</td><td>43" × 18" × 65"</td></tr>
+            </table>
+            
+            <h3>Spill Kit Contents</h3>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="name">Chemical-resistant gloves</div>
+                    <div class="spec">Extra pairs</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Face shield</div>
+                    <div class="spec">Full face protection</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Absorbent materials</div>
+                    <div class="spec">Vermiculite/clay</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Plastic scoop/dustpan</div>
+                    <div class="spec">Waste collection</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Sealable containers</div>
+                    <div class="spec">Waste storage</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Citric acid/vinegar</div>
+                    <div class="spec">Neutralization</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="ppe">
+            <h2>🥽 PPE Requirements (29 CFR 1910.132-138)</h2>
+            
+            <div class="alert alert-warning">
+                <strong>Required:</strong> Employer must conduct and certify a workplace hazard assessment, and provide PPE at no cost to employees.
+            </div>
+            
+            <h3>Lye Handling PPE</h3>
+            <table>
+                <tr><th>Body Part</th><th>Required PPE</th><th>Specification</th></tr>
+                <tr><td><strong>Eyes</strong></td><td>Chemical splash goggles</td><td>ANSI Z87.1 rated, indirect vented</td></tr>
+                <tr><td><strong>Face</strong></td><td>Face shield</td><td>Over goggles for pouring/mixing</td></tr>
+                <tr><td><strong>Hands</strong></td><td>Chemical-resistant gloves</td><td>Neoprene, nitrile, or butyl rubber; min 14 mil</td></tr>
+                <tr><td><strong>Arms</strong></td><td>Long sleeves or arm guards</td><td>Chemical-resistant material</td></tr>
+                <tr><td><strong>Body</strong></td><td>Chemical-resistant apron</td><td>Full-length, PVC or rubber</td></tr>
+                <tr><td><strong>Feet</strong></td><td>Chemical-resistant footwear</td><td>Closed-toe, non-absorbent</td></tr>
+            </table>
+            
+            <h3>Essential Oil Handling PPE</h3>
+            <table>
+                <tr><th>Body Part</th><th>Required PPE</th><th>Specification</th></tr>
+                <tr><td><strong>Eyes</strong></td><td>Safety glasses or goggles</td><td>ANSI Z87.1 rated</td></tr>
+                <tr><td><strong>Hands</strong></td><td>Nitrile gloves</td><td>Prevent skin sensitization</td></tr>
+                <tr><td><strong>Respiratory</strong></td><td>Consider if ventilation inadequate</td><td>Half-mask with P100</td></tr>
+            </table>
+            
+            <h3>PPE Training Requirements</h3>
+            <ul class="checklist">
+                <li>When PPE is necessary</li>
+                <li>What PPE is necessary</li>
+                <li>How to properly don, doff, adjust, and wear PPE</li>
+                <li>Limitations of the PPE</li>
+                <li>Proper care, maintenance, useful life, and disposal</li>
+            </ul>
+        </div>
+        
+        <div class="card" id="exits">
+            <h2>🚪 Emergency Exit Requirements (29 CFR 1910.36-37)</h2>
+            
+            <h3>Number of Exits</h3>
+            <div class="alert alert-info">
+                For 4,700 sq ft: <strong>Minimum 2 exits required</strong>, located as far apart as practical.
+            </div>
+            
+            <h3>Exit Design Requirements</h3>
+            <table>
+                <tr><th>Element</th><th>Requirement</th></tr>
+                <tr><td>Door swing</td><td>Outward (direction of exit travel) if >50 occupants or high hazard</td></tr>
+                <tr><td>Door width</td><td>Minimum 28 inches; typically 32-36 inches</td></tr>
+                <tr><td>Ceiling height</td><td>Minimum 7 feet 6 inches</td></tr>
+                <tr><td>Path width</td><td>Minimum 28 inches unobstructed</td></tr>
+                <tr><td>Door locks</td><td>Must open from inside without keys, tools, or special knowledge</td></tr>
+            </table>
+            
+            <h3>Exit Signage Requirements</h3>
+            <table>
+                <tr><th>Requirement</th><th>Specification</th></tr>
+                <tr><td>Sign text</td><td>"EXIT" in letters ≥6 inches high</td></tr>
+                <tr><td>Stroke width</td><td>Principal strokes ≥3/4 inch wide</td></tr>
+                <tr><td>Illumination</td><td>≥5 foot-candles OR self-luminous</td></tr>
+                <tr><td>Visibility</td><td>Distinctive color, clearly visible at all times</td></tr>
+                <tr><td>"Not an Exit" signs</td><td>Required for doors that could be mistaken for exits</td></tr>
+            </table>
+        </div>
+        
+        <div class="card" id="equipment">
+            <h2>📦 Equipment List with Specifications</h2>
+            
+            <h3>Emergency Eye Wash/Shower</h3>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="name">Combination Eye Wash/Shower</div>
+                    <div class="spec">ANSI Z358.1; 84-96"H × 30-36"W</div>
+                    <div class="qty">Qty: 1-2</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Portable Eye Wash</div>
+                    <div class="spec">16-gallon gravity-fed backup</div>
+                    <div class="qty">Qty: 1</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Eye Wash Bottles</div>
+                    <div class="spec">32 oz squeeze bottle</div>
+                    <div class="qty">Qty: 4+</div>
+                </div>
+            </div>
+            
+            <h3>Fire Protection</h3>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="name">ABC Fire Extinguisher</div>
+                    <div class="spec">10 lb, 4A:60B:C rating</div>
+                    <div class="qty">Qty: 4</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Extinguisher Cabinet</div>
+                    <div class="spec">Surface mount, 10 lb capacity</div>
+                    <div class="qty">Qty: 4</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Exit Signs</div>
+                    <div class="spec">LED, 6" letters, battery backup</div>
+                    <div class="qty">Qty: 2-4</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Fire Alarm Pull Station</div>
+                    <div class="spec">Manual pull, single action</div>
+                    <div class="qty">Qty: 2+</div>
+                </div>
+            </div>
+            
+            <h3>First Aid</h3>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="name">First Aid Cabinet</div>
+                    <div class="spec">4-shelf, ANSI Z308.1, metal</div>
+                    <div class="qty">Qty: 1</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">AED</div>
+                    <div class="spec">Automated External Defibrillator</div>
+                    <div class="qty">Qty: 1 (recommended)</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Wall Eye Wash Station</div>
+                    <div class="spec">32 oz dual bottles</div>
+                    <div class="qty">Qty: 1-2</div>
+                </div>
+            </div>
+            
+            <h3>Chemical Storage</h3>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="name">Flammable Storage Cabinet</div>
+                    <div class="spec">30-45 gal, 18-ga steel</div>
+                    <div class="qty">Qty: 1-2</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Corrosive Storage Cabinet</div>
+                    <div class="spec">Polyethylene, acid/base</div>
+                    <div class="qty">Qty: 1</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Secondary Containment Pallet</div>
+                    <div class="spec">66-gal capacity, HDPE</div>
+                    <div class="qty">Qty: 1-2</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Spill Kit</div>
+                    <div class="spec">20-gallon capacity, universal</div>
+                    <div class="qty">Qty: 2</div>
+                </div>
+            </div>
+            
+            <h3>Safety Signage</h3>
+            <div class="equipment-grid">
+                <div class="equipment-item">
+                    <div class="name">Eye Wash Sign</div>
+                    <div class="spec">Photoluminescent, 10" × 14"</div>
+                    <div class="qty">Qty: 2</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Emergency Shower Sign</div>
+                    <div class="spec">Photoluminescent, 10" × 14"</div>
+                    <div class="qty">Qty: 2</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Fire Extinguisher Sign</div>
+                    <div class="spec">Photoluminescent, 12" × 8"</div>
+                    <div class="qty">Qty: 4</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">PPE Required Signs</div>
+                    <div class="spec">Various, safety blue</div>
+                    <div class="qty">Qty: 4+</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">Chemical Hazard Signs</div>
+                    <div class="spec">"Corrosive", "Flammable"</div>
+                    <div class="qty">Qty: 4+</div>
+                </div>
+                <div class="equipment-item">
+                    <div class="name">SDS Location Sign</div>
+                    <div class="spec">"SDS Available Here"</div>
+                    <div class="qty">Qty: 1-2</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="placement">
+            <h2>📍 Placement Guidelines</h2>
+            
+            <h3>Facility Layout Diagram (~4,700 sq ft)</h3>
+            <div class="diagram">┌────────────────────────────────────────────────────────────────┐
+│                                                                │
+│  [EXIT 1]                                            [EXIT 2]  │
+│     ↓                                                    ↓     │
+│  +------+                                          +--------+  │
+│  |SHOWER|←-- Within 10 sec                         | FLAM   |  │
+│  |+EYE  |     of lye area                          |CABINET |  │
+│  |WASH  |                                          +--------+  │
+│  +------+                                                      │
+│     ↑        +-----------------+                               │
+│     |        | LYE MIXING &    |      [FIRE EXT]               │
+│  [FIRST AID] | SOAP MAKING     |          ↑                    │
+│     +        | AREA            |     Max 75 ft                 │
+│              +-----------------+     from any                  │
+│                                      point                     │
+│  [FIRE EXT]                                        [FIRE EXT]  │
+│     ↑                                                  ↑       │
+│              +----------------+                                │
+│              | STORAGE/       |     [PPE                       │
+│              | CURING         |      STATION]                  │
+│              +----------------+                                │
+│                                                                │
+│  [SDS STATION]                             [FIRE EXT]          │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘</div>
+            
+            <h3>Key Placement Rules</h3>
+            <table>
+                <tr><th>Equipment</th><th>Rule</th></tr>
+                <tr><td><strong>Eye wash/shower</strong></td><td>Within 55 feet (10 seconds) of lye handling — NO OBSTRUCTIONS</td></tr>
+                <tr><td><strong>Fire extinguishers</strong></td><td>Maximum 75 feet apart (Class A); 50 feet from Class B hazards</td></tr>
+                <tr><td><strong>Exits</strong></td><td>Opposite ends of facility, doors swing outward</td></tr>
+                <tr><td><strong>First aid</strong></td><td>Central, visible location</td></tr>
+                <tr><td><strong>SDS station</strong></td><td>Accessible during all shifts</td></tr>
+                <tr><td><strong>Flammable cabinet</strong></td><td>Away from exits, heat sources, and ignition sources</td></tr>
+            </table>
+        </div>
+        
+        <div class="card" id="checklist">
+            <h2>✅ Compliance Checklist</h2>
+            
+            <h3>Initial Setup</h3>
+            
+            <h4>Hazard Communication</h4>
+            <ul class="checklist">
+                <li>Written HazCom program developed</li>
+                <li>Chemical inventory completed</li>
+                <li>SDS collection organized and accessible</li>
+                <li>Container labeling system implemented</li>
+                <li>Employee training conducted and documented</li>
+            </ul>
+            
+            <h4>Emergency Equipment</h4>
+            <ul class="checklist">
+                <li>Eye wash/shower installed and tested</li>
+                <li>Eye wash within 10 seconds of lye handling</li>
+                <li>Fire extinguishers installed per layout</li>
+                <li>Fire extinguisher inspection tags in place</li>
+                <li>Emergency exits clearly marked</li>
+                <li>Exit signs illuminated</li>
+                <li>Alarm system operational</li>
+                <li>First aid kit(s) stocked and accessible</li>
+            </ul>
+            
+            <h4>Chemical Storage</h4>
+            <ul class="checklist">
+                <li>Flammable storage cabinet installed</li>
+                <li>Lye stored properly with secondary containment</li>
+                <li>Chemicals segregated by compatibility</li>
+                <li>Spill kits readily available</li>
+                <li>Chemical labels visible and legible</li>
+            </ul>
+            
+            <h4>PPE Program</h4>
+            <ul class="checklist">
+                <li>Hazard assessment completed and certified</li>
+                <li>PPE selected for all operations</li>
+                <li>PPE inventory stocked</li>
+                <li>PPE training conducted</li>
+                <li>PPE storage area designated</li>
+            </ul>
+            
+            <h3>Ongoing Maintenance Schedule</h3>
+            <table>
+                <tr><th>Task</th><th>Frequency</th></tr>
+                <tr><td>Eye wash/shower flush test</td><td>Weekly</td></tr>
+                <tr><td>Fire extinguisher visual inspection</td><td>Monthly</td></tr>
+                <tr><td>First aid kit inspection</td><td>Monthly</td></tr>
+                <tr><td>Exit lighting check</td><td>Monthly</td></tr>
+                <tr><td>Employee safety training refresh</td><td>Annually</td></tr>
+                <tr><td>Fire extinguisher professional service</td><td>Annually</td></tr>
+                <tr><td>Emergency drill</td><td>Annually</td></tr>
+                <tr><td>Hazard assessment review</td><td>Annually or when changes occur</td></tr>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>📞 Resources & Contacts</h2>
+            
+            <h3>OSHA Resources</h3>
+            <table>
+                <tr><td>OSHA Consultation Program (FREE)</td><td><a href="https://www.osha.gov/consultation" target="_blank">osha.gov/consultation</a></td></tr>
+                <tr><td>OSHA Region 3 (includes PA)</td><td>(215) 861-4900</td></tr>
+                <tr><td>Small Business Handbook</td><td><a href="https://www.osha.gov/publications" target="_blank">osha.gov/publications</a></td></tr>
+            </table>
+            
+            <h3>Pennsylvania Resources</h3>
+            <table>
+                <tr><td>Pittsburgh Bureau of Fire</td><td>(412) 255-2860</td></tr>
+                <tr><td>Allegheny County Health Dept</td><td>(412) 687-2243</td></tr>
+                <tr><td>PA Dept of Labor & Industry</td><td><a href="https://www.dli.pa.gov" target="_blank">dli.pa.gov</a></td></tr>
+            </table>
+            
+            <div class="alert alert-info">
+                <strong>Pennsylvania follows federal OSHA</strong> — no additional state-specific OSHA requirements for private employers. However, consult with the Pittsburgh fire marshal for local fire code specifics before buildout.
+            </div>
+        </div>
+        
+        <div class="card" style="background: #fff3e0; border: 1px solid #ffcc80;">
+            <h2>⚠️ Disclaimer</h2>
+            <p style="font-size: 13px; color: #5d4037;">
+                This document is provided as a general guidance tool and should not be considered legal advice or a substitute for professional consultation. Requirements may change, and specific circumstances may require additional measures.
+            </p>
+            <p style="font-size: 13px; color: #5d4037; margin-top: 12px;">
+                <strong>Recommendations:</strong>
+            </p>
+            <ol style="font-size: 13px; color: #5d4037; margin-top: 8px; padding-left: 20px;">
+                <li>Consult with OSHA's free consultation program</li>
+                <li>Have fire marshal review floor plan before buildout</li>
+                <li>Consult with insurance carrier for additional requirements</li>
+                <li>Consider hiring a safety consultant for initial setup</li>
+                <li>Review and update annually</li>
+            </ol>
+        </div>
+        
+        <div style="text-align: center; padding: 40px 0; color: #86868b; font-size: 12px;">
+            Document Prepared: January 2026 | Next Review: January 2027<br>
+            For OSHA questions: (215) 861-4900 | osha.gov
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheeky Soap Production Facility - Floor Plan</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7; 
+            color: #1d1d1f;
+            overflow: hidden;
+        }
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 12px;
+            z-index: 100;
+            border-bottom: 1px solid #d2d2d7;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        #toolbar h1 { font-size: 15px; font-weight: 600; color: #1d1d1f; margin-right: 20px; }
+        .tool-group { display: flex; gap: 6px; align-items: center; }
+        .tool-group label { font-size: 12px; color: #86868b; }
+        .divider { width: 1px; height: 28px; background: #d2d2d7; margin: 0 8px; }
+        button {
+            background: #f5f5f7;
+            border: 1px solid #d2d2d7;
+            color: #1d1d1f;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        button:hover { background: #e8e8ed; border-color: #c7c7cc; }
+        button.active { background: #0071e3; color: #fff; border-color: #0071e3; }
+        button.save-btn { background: #34c759; color: #fff; border-color: #34c759; }
+        button.save-btn:hover { background: #30b350; }
+        button.load-btn { background: #007aff; color: #fff; border-color: #007aff; }
+        button.load-btn:hover { background: #0068d6; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        button:disabled:hover { background: #f5f5f7; border-color: #d2d2d7; }
+        .save-indicator { font-size: 11px; color: #34c759; margin-left: 8px; }
+        #file-input { display: none; }
+        #sidebar {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: 220px;
+            bottom: 0;
+            background: #fff;
+            padding: 16px;
+            overflow-y: auto;
+            border-right: 1px solid #d2d2d7;
+        }
+        #sidebar h3 { 
+            font-size: 11px; 
+            font-weight: 600;
+            color: #86868b; 
+            margin: 16px 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #sidebar h3:first-child { margin-top: 0; }
+        .equipment-item {
+            background: #f5f5f7;
+            padding: 10px 12px;
+            margin: 4px 0;
+            border-radius: 8px;
+            cursor: grab;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+        }
+        .equipment-item:hover { background: #e8e8ed; border-color: #d2d2d7; }
+        .equipment-item .dims { font-size: 10px; color: #86868b; font-weight: 400; margin-left: 4px; }
+        .zone-item {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            border: 2px solid;
+            transition: all 0.15s;
+        }
+        .zone-item:hover { transform: scale(1.02); }
+        .zone-item.selected { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.5); transform: scale(1.02); }
+        #canvas-container {
+            position: fixed;
+            top: 56px;
+            left: 220px;
+            right: 220px;
+            bottom: 0;
+            overflow: auto;
+            background: #e5e5e5;
+            /* Subtle dot pattern background */
+            background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+            background-size: 20px 20px;
+            /* Centering */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px;
+        }
+        #floor-canvas {
+            background: #fff;
+            cursor: crosshair;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        #info-panel {
+            position: fixed;
+            top: 56px;
+            right: 0;
+            width: 220px;
+            bottom: 0;
+            background: #fff;
+            padding: 16px;
+            overflow-y: auto;
+            border-left: 1px solid #d2d2d7;
+        }
+        #info-panel h3 { 
+            font-size: 11px; 
+            font-weight: 600;
+            color: #86868b; 
+            margin: 16px 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        #info-panel h3:first-child { margin-top: 0; }
+        .info-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 6px 0;
+            font-size: 12px;
+            border-bottom: 1px solid #f5f5f7;
+        }
+        .info-row span:first-child { color: #86868b; }
+        .info-row span:last-child { font-weight: 500; }
+        #selection-info { margin-top: 16px; }
+        .legend-item { display: flex; align-items: center; gap: 10px; padding: 4px 0; font-size: 11px; }
+        .legend-color { width: 14px; height: 14px; border-radius: 4px; }
+        #zoom-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 240px;
+            display: flex;
+            gap: 4px;
+            background: #fff;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #zoom-controls button { padding: 8px 14px; font-size: 14px; border: none; background: transparent; }
+        #zoom-controls button:hover { background: #f5f5f7; }
+        #current-file { font-size: 11px; color: #ff9500; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #tooltip {
+            position: fixed;
+            background: rgba(29,29,31,0.95);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            max-width: 220px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        #tooltip .tt-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+        #tooltip .tt-dims { color: #a1a1a6; font-size: 11px; }
+        #tooltip .tt-pos { color: #a1a1a6; font-size: 11px; margin-top: 2px; }
+        #tooltip .tt-hint { color: #ff9500; font-size: 10px; margin-top: 6px; }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #d2d2d7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 { font-size: 16px; font-weight: 600; margin: 0; }
+        .modal-close {
+            background: none; border: none; font-size: 20px;
+            cursor: pointer; color: #86868b; padding: 4px 8px;
+        }
+        .modal-close:hover { color: #1d1d1f; }
+        .modal-body {
+            padding: 16px 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .version-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 6px 0;
+            background: #f5f5f7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .version-item:hover { background: #e8e8ed; }
+        .version-item .version-info { flex: 1; }
+        .version-item .version-name { font-weight: 600; font-size: 13px; color: #1d1d1f; }
+        .version-item .version-date { font-size: 11px; color: #86868b; margin-top: 2px; }
+        .version-item .version-actions { display: flex; gap: 6px; }
+        .version-item button {
+            padding: 6px 12px;
+            font-size: 11px;
+        }
+        .btn-delete { background: #ff3b30 !important; color: #fff !important; border-color: #ff3b30 !important; }
+        .btn-delete:hover { background: #d63029 !important; }
+        .no-versions { text-align: center; color: #86868b; padding: 40px 20px; font-size: 13px; }
+        .save-prompt { margin-bottom: 16px; }
+        .save-prompt input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .save-prompt input:focus { outline: none; border-color: #007aff; }
+        
+        /* Project selector styles */
+        .project-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .project-selector select {
+            padding: 7px 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #fff;
+            min-width: 150px;
+            cursor: pointer;
+        }
+        .project-selector select:focus { outline: none; border-color: #007aff; }
+        .btn-new-project {
+            background: #5856d6 !important;
+            color: #fff !important;
+            border-color: #5856d6 !important;
+            padding: 7px 10px !important;
+        }
+        .btn-new-project:hover { background: #4a48c7 !important; }
+        
+        /* Project modal styles */
+        .project-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 6px 0;
+            background: #f5f5f7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 2px solid transparent;
+        }
+        .project-item:hover { background: #e8e8ed; }
+        .project-item.active { border-color: #007aff; background: rgba(0,122,255,0.08); }
+        .project-item .project-info { flex: 1; }
+        .project-item .project-name { font-weight: 600; font-size: 13px; color: #1d1d1f; }
+        .project-item .project-meta { font-size: 11px; color: #86868b; margin-top: 2px; }
+        .project-item .project-actions { display: flex; gap: 6px; }
+        .create-project-form { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #d2d2d7; }
+        .create-project-form input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .create-project-form input:focus { outline: none; border-color: #007aff; }
+
+        /* Mode indicator */
+        .mode-indicator {
+            position: fixed;
+            top: 66px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 122, 255, 0.95);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            z-index: 100;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .mode-indicator.hidden {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-10px);
+            pointer-events: none;
+        }
+        .mode-indicator .mode-text { font-weight: 600; }
+        .mode-indicator .mode-hint { opacity: 0.8; font-size: 11px; }
+        .mode-indicator .mode-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <h1>🧼 Cheeky Floor Plan</h1>
+        <div class="project-selector">
+            <select id="project-select">
+                <option value="">Select Project...</option>
+            </select>
+            <button class="btn-new-project" onclick="openProjectsModal()" title="Manage Projects">⚙️</button>
+        </div>
+        <div class="divider"></div>
+        <div class="tool-group">
+            <button id="btn-select" class="active">Select</button>
+            <button id="btn-zone">New Zone</button>
+            <button id="btn-measure">Measure</button>
+        </div>
+        <div class="divider"></div>
+        <div class="tool-group">
+            <button id="btn-save" class="save-btn">💾 Save</button>
+            <button id="btn-versions" class="load-btn">📂 Versions</button>
+            <button id="btn-load-file" style="background:#8e8e93;color:#fff;border-color:#8e8e93;">📄 File</button>
+            <input type="file" id="file-input" accept=".json">
+        </div>
+        <div class="divider"></div>
+        <div class="tool-group">
+            <a href="/osha.html" style="background:#ff9500;color:#fff;border-color:#ff9500;padding:7px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:500;">⚠️ OSHA</a>
+        </div>
+        <div class="divider"></div>
+        <div class="tool-group">
+            <button id="btn-undo" title="Undo (Ctrl+Z)" disabled>↩ Undo</button>
+            <button id="btn-redo" title="Redo (Ctrl+Y)" disabled>↪ Redo</button>
+        </div>
+        <div class="divider"></div>
+        <div class="tool-group">
+            <button id="btn-grid">Grid</button>
+            <button id="btn-clear">Clear</button>
+            <button id="btn-reset">Default</button>
+            <button id="btn-export">PNG</button>
+        </div>
+        <span class="save-indicator" id="save-indicator"></span>
+        <span id="current-file"></span>
+        <div class="tool-group" style="margin-left: auto;">
+            <label>Zoom: <strong id="zoom-display">100%</strong></label>
+        </div>
+    </div>
+
+    <div id="sidebar">
+        <h3>Equipment</h3>
+        <div class="equipment-item" draggable="true" data-type="pot-tipper" data-w="36" data-h="36" data-color="#5856d6">Pot Tipper 164qt <span class="dims">36"</span></div>
+        <div class="equipment-item" draggable="true" data-type="mixer" data-w="24" data-h="24" data-color="#34c759">Mighty Mixer <span class="dims">24"</span></div>
+        <div class="equipment-item" draggable="true" data-type="cutter-loaf" data-w="48" data-h="36" data-color="#ff3b30">Loaf Cutter <span class="dims">48×36"</span></div>
+        <div class="equipment-item" draggable="true" data-type="cutter-bar" data-w="48" data-h="36" data-color="#ff9500">Bar Cutter <span class="dims">48×36"</span></div>
+        <div class="equipment-item" draggable="true" data-type="hoist" data-w="60" data-h="48" data-color="#af52de">Hoist System <span class="dims">60×48"</span></div>
+        <div class="equipment-item" draggable="true" data-type="mold" data-w="21" data-h="11" data-color="#007aff">Soap Mold <span class="dims">21×11"</span></div>
+        <div class="equipment-item" draggable="true" data-type="pallet" data-w="48" data-h="40" data-color="#8e8e93">Pallet <span class="dims">48×40"</span></div>
+        <div class="equipment-item" draggable="true" data-type="pallet-drying" data-w="48" data-h="40" data-color="#ff9500">Drying Pallet <span class="dims">48×40"</span></div>
+        <div class="equipment-item" draggable="true" data-type="oil-drum" data-w="24" data-h="24" data-color="#5856d6">Oil Barrel <span class="dims">24" dia</span></div>
+        <div class="equipment-item" draggable="true" data-type="table-6ft" data-w="72" data-h="30" data-color="#636366">Table 6ft <span class="dims">72×30"</span></div>
+        <div class="equipment-item" draggable="true" data-type="table-4ft" data-w="48" data-h="24" data-color="#636366">Table 4ft <span class="dims">48×24"</span></div>
+        <div class="equipment-item" draggable="true" data-type="scale" data-w="18" data-h="18" data-color="#30d158">Scale <span class="dims">18"</span></div>
+        <div class="equipment-item" draggable="true" data-type="desk" data-w="60" data-h="30" data-color="#aeaeb2">Desk <span class="dims">60×30"</span></div>
+        <div class="equipment-item" draggable="true" data-type="shelf" data-w="48" data-h="18" data-color="#8e8e93">Shelving <span class="dims">48×18"</span></div>
+        <div class="equipment-item" draggable="true" data-type="chair" data-w="18" data-h="18" data-color="#aeaeb2">Chair <span class="dims">18"</span></div>
+
+        <h3>Zone Types</h3>
+        <div class="zone-item" data-zone="shipping" style="border-color: #ffcc00; background: rgba(255,204,0,0.15); color: #8a6d00;">Shipping</div>
+        <div class="zone-item" data-zone="boxing" style="border-color: #30d158; background: rgba(48,209,88,0.15); color: #1c7a32;">Boxing</div>
+        <div class="zone-item" data-zone="drying" style="border-color: #ff9500; background: rgba(255,149,0,0.15); color: #8a5000;">Drying</div>
+        <div class="zone-item" data-zone="cutting" style="border-color: #ff3b30; background: rgba(255,59,48,0.15); color: #8a2019;">Cutting</div>
+        <div class="zone-item" data-zone="molding" style="border-color: #af52de; background: rgba(175,82,222,0.15); color: #6c2d8a;">Molding</div>
+        <div class="zone-item" data-zone="mixing" style="border-color: #34c759; background: rgba(52,199,89,0.15); color: #1c7a32;">Mixing</div>
+        <div class="zone-item" data-zone="prep" style="border-color: #007aff; background: rgba(0,122,255,0.15); color: #004799;">Prep</div>
+        <div class="zone-item" data-zone="storage" style="border-color: #8e8e93; background: rgba(142,142,147,0.15); color: #48484a;">Storage</div>
+        <div class="zone-item" data-zone="office" style="border-color: #5856d6; background: rgba(88,86,214,0.15); color: #3634a3;">Office</div>
+        <div class="zone-item" data-zone="break" style="border-color: #ff2d55; background: rgba(255,45,85,0.15); color: #8a182e;">Break</div>
+        <div class="zone-item" data-zone="wash" style="border-color: #5ac8fa; background: rgba(90,200,250,0.15); color: #0077b3;">Wash/Cleaning</div>
+    </div>
+
+    <div id="canvas-container">
+        <canvas id="floor-canvas"></canvas>
+    </div>
+
+    <div id="mode-indicator" class="mode-indicator hidden">
+        <span id="mode-color" class="mode-color"></span>
+        <span id="mode-text" class="mode-text"></span>
+        <span class="mode-hint">Press ESC to cancel</span>
+    </div>
+
+    <div id="info-panel">
+        <h3>Building</h3>
+        <div class="info-row"><span>Unit</span><span>3253-G</span></div>
+        <div class="info-row"><span>Area</span><span>4,704 sq ft</span></div>
+        <div class="info-row"><span>Dimensions</span><span>47' × 100'</span></div>
+        
+        <h3>Production</h3>
+        <div class="info-row"><span>Daily Output</span><span>5,000 bars</span></div>
+        <div class="info-row"><span>Cure Time</span><span>7 days</span></div>
+        <div class="info-row"><span>Capacity</span><span>35,000 bars</span></div>
+        <div class="info-row"><span>Molds</span><span>30</span></div>
+        
+        <h3>Workflow</h3>
+        <div style="font-size: 11px; line-height: 1.8; color: #86868b;">
+            ① Raw Materials → ② Prep →<br>
+            ③ Mix → ④ Molds → ⑤ Cure →<br>
+            ⑥ Cut → ⑦ Dry → ⑧ Box → ⑨ Ship
+        </div>
+        
+        <div id="selection-info">
+            <h3>Selected</h3>
+            <div id="selected-details" style="font-size: 11px; color: #86868b; line-height: 1.6;">
+                Hover to preview<br>
+                Click to select<br>
+                Drag zones to move with items<br>
+                Delete to remove
+            </div>
+        </div>
+    </div>
+
+    <div id="zoom-controls">
+        <button id="btn-zoom-out">−</button>
+        <button id="btn-zoom-reset">Reset</button>
+        <button id="btn-zoom-in">+</button>
+    </div>
+    
+    <div id="tooltip"></div>
+    
+    <!-- Versions Modal -->
+    <div id="versions-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📂 Saved Versions</h2>
+                <button class="modal-close" onclick="closeVersionsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="save-prompt">
+                    <input type="text" id="save-name" placeholder="Version name (e.g., 'Initial layout', 'After moving drying')">
+                    <button id="btn-save-version" class="save-btn" style="width:100%;margin-top:8px;">💾 Save Current Layout</button>
+                </div>
+                <div id="versions-list"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Projects Modal -->
+    <div id="projects-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📁 Projects</h2>
+                <button class="modal-close" onclick="closeProjectsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="create-project-form">
+                    <input type="text" id="new-project-name" placeholder="New project name...">
+                    <input type="text" id="new-project-desc" placeholder="Description (optional)">
+                    <button onclick="createProject()" class="btn-new-project" style="width:100%;">➕ Create New Project</button>
+                </div>
+                <div id="projects-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let SCALE = 8;
+        const MIN_SCALE = 4, MAX_SCALE = 32;
+        const ZOOM_LEVELS = [4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32];
+        let currentZoomIndex = ZOOM_LEVELS.indexOf(8); // Default 100%
+        let zoomAnimation = null;
+        const BUILDING = { width: 47, depth: 100 };
+        const canvas = document.getElementById('floor-canvas');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+        
+        let showGrid = true;
+        let currentTool = 'select';
+        let placedItems = [];
+        let zones = [];
+        // Multi-selection arrays
+        let selectedItems = [];
+        let selectedZones = [];
+        let selectionRect = null; // For marquee selection {x1, y1, x2, y2}
+        let hoveredItem = null;
+        let hoveredZone = null;
+        let dragItem = null;
+        let dragZone = null;
+        let dragOffset = { x: 0, y: 0 };
+        let resizingZone = null;
+        let resizeEdge = null; // 'n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'
+        let isDrawingZone = false;
+        let zoneStart = null;
+        let currentZoneType = null;
+        let measureStart = null;
+        let currentFileName = null;
+        let currentProjectId = null;
+        let currentProjectName = null;
+
+        // Undo/redo history
+        const MAX_HISTORY = 50;
+        let undoStack = [];
+        let redoStack = [];
+
+        const ZONE_COLORS = {
+            prep: { border: '#007aff', fill: 'rgba(0,122,255,0.2)', text: '#004799' },
+            mixing: { border: '#34c759', fill: 'rgba(52,199,89,0.2)', text: '#1c7a32' },
+            molding: { border: '#af52de', fill: 'rgba(175,82,222,0.2)', text: '#6c2d8a' },
+            cutting: { border: '#ff3b30', fill: 'rgba(255,59,48,0.2)', text: '#8a2019' },
+            drying: { border: '#ff9500', fill: 'rgba(255,149,0,0.2)', text: '#8a5000' },
+            boxing: { border: '#30d158', fill: 'rgba(48,209,88,0.2)', text: '#1c7a32' },
+            storage: { border: '#8e8e93', fill: 'rgba(142,142,147,0.2)', text: '#48484a' },
+            office: { border: '#5856d6', fill: 'rgba(88,86,214,0.2)', text: '#3634a3' },
+            break: { border: '#ff2d55', fill: 'rgba(255,45,85,0.2)', text: '#8a182e' },
+            shipping: { border: '#ffcc00', fill: 'rgba(255,204,0,0.2)', text: '#8a6d00' },
+            wash: { border: '#5ac8fa', fill: 'rgba(90,200,250,0.2)', text: '#0077b3' }
+        };
+
+        const ITEM_NAMES = {
+            'pot-tipper': 'Pot Tipper 164qt', 'mixer': 'Mighty Mixer', 'cutter-loaf': 'Loaf Cutter',
+            'cutter-bar': 'Bar Cutter', 'hoist': 'Hoist System', 'mold': 'Soap Mold', 'pallet': 'Pallet',
+            'pallet-drying': 'Drying Pallet', 'oil-drum': 'Oil Barrel', 'table-6ft': 'Work Table 6ft',
+            'table-4ft': 'Work Table 4ft', 'scale': 'Scale', 'desk': 'Desk', 'shelf': 'Shelving', 'chair': 'Chair'
+        };
+
+        // Updated default layout - tighter, no stairs area
+        const DEFAULT_LAYOUT = {
+            version: "1.0",
+            name: "Cheeky Production Facility",
+            scale: 8,
+            zones: [
+                { type: 'shipping', label: 'Shipping/Receiving', x: 1, y: 2, w: 45, h: 10 },
+                { type: 'boxing', label: 'Boxing/Packing', x: 1, y: 13, w: 26, h: 14 },
+                { type: 'drying', label: 'Drying Room', x: 28, y: 13, w: 18, h: 40 },
+                { type: 'cutting', label: 'Cutting Area', x: 1, y: 28, w: 26, h: 16 },
+                { type: 'molding', label: 'Molding/Cure', x: 1, y: 45, w: 26, h: 18 },
+                { type: 'mixing', label: 'Mixing Station', x: 12, y: 64, w: 18, h: 12 },
+                { type: 'prep', label: 'Ingredient Prep', x: 31, y: 55, w: 14, h: 12 },
+                { type: 'storage', label: 'Raw Materials', x: 12, y: 77, w: 34, h: 20 },
+                { type: 'wash', label: 'Wash/Cleaning', x: 1, y: 64, w: 10, h: 10 },
+                { type: 'break', label: 'Break Area', x: 31, y: 68, w: 14, h: 8 }
+            ],
+            items: [
+                // Mixing - next to wash area
+                { type: 'pot-tipper', x: 13, y: 65, w: 36, h: 36, color: '#5856d6' },
+                { type: 'pot-tipper', x: 17, y: 65, w: 36, h: 36, color: '#5856d6' },
+                { type: 'mixer', x: 13, y: 70, w: 24, h: 24, color: '#34c759' },
+                { type: 'mixer', x: 16, y: 70, w: 24, h: 24, color: '#34c759' },
+                // Prep
+                { type: 'table-6ft', x: 32, y: 57, w: 72, h: 30, color: '#636366' },
+                { type: 'scale', x: 33, y: 58, w: 18, h: 18, color: '#30d158' },
+                { type: 'scale', x: 36, y: 58, w: 18, h: 18, color: '#30d158' },
+                // Raw materials - spread out more
+                { type: 'oil-drum', x: 13, y: 79, w: 24, h: 24, color: '#5856d6' },
+                { type: 'oil-drum', x: 15, y: 79, w: 24, h: 24, color: '#5856d6' },
+                { type: 'oil-drum', x: 17, y: 79, w: 24, h: 24, color: '#5856d6' },
+                { type: 'oil-drum', x: 19, y: 79, w: 24, h: 24, color: '#5856d6' },
+                { type: 'pallet', x: 13, y: 83, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 17, y: 83, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 21, y: 83, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 25, y: 83, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 29, y: 83, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 13, y: 88, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 17, y: 88, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 21, y: 88, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 25, y: 88, w: 48, h: 40, color: '#8e8e93' },
+                { type: 'pallet', x: 29, y: 88, w: 48, h: 40, color: '#8e8e93' },
+                // Cutting - left wall
+                { type: 'hoist', x: 2, y: 29, w: 60, h: 48, color: '#af52de' },
+                { type: 'cutter-loaf', x: 2, y: 34, w: 48, h: 36, color: '#ff3b30' },
+                { type: 'cutter-loaf', x: 7, y: 34, w: 48, h: 36, color: '#ff3b30' },
+                { type: 'cutter-bar', x: 2, y: 39, w: 48, h: 36, color: '#ff9500' },
+                // Molds - 30 total in grid
+                ...Array.from({length: 5}, (_, row) => 
+                    Array.from({length: 6}, (_, col) => ({
+                        type: 'mold', x: 2 + col * 2, y: 46 + row * 2, w: 21, h: 11, color: '#007aff'
+                    }))
+                ).flat(),
+                // Drying pallets - 9 for capacity
+                { type: 'pallet-drying', x: 29, y: 15, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 33, y: 15, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 37, y: 15, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 29, y: 22, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 33, y: 22, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 37, y: 22, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 29, y: 29, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 33, y: 29, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 37, y: 29, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 29, y: 36, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 33, y: 36, w: 48, h: 40, color: '#ff9500' },
+                { type: 'pallet-drying', x: 37, y: 36, w: 48, h: 40, color: '#ff9500' },
+                // Boxing tables - left side
+                { type: 'table-6ft', x: 2, y: 15, w: 72, h: 30, color: '#636366' },
+                { type: 'table-6ft', x: 2, y: 18, w: 72, h: 30, color: '#636366' },
+                { type: 'table-6ft', x: 2, y: 21, w: 72, h: 30, color: '#636366' },
+                { type: 'table-6ft', x: 2, y: 24, w: 72, h: 30, color: '#636366' },
+                // Shipping pallets
+                { type: 'pallet', x: 2, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                { type: 'pallet', x: 7, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                { type: 'pallet', x: 12, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                { type: 'pallet', x: 17, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                { type: 'pallet', x: 22, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                { type: 'pallet', x: 27, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                { type: 'pallet', x: 32, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                { type: 'pallet', x: 37, y: 4, w: 48, h: 40, color: '#ffcc00' },
+                // Break area (moved to right side)
+                { type: 'table-4ft', x: 32, y: 70, w: 48, h: 24, color: '#636366' },
+                { type: 'chair', x: 32, y: 73, w: 18, h: 18, color: '#aeaeb2' },
+                { type: 'chair', x: 34, y: 73, w: 18, h: 18, color: '#aeaeb2' },
+                { type: 'chair', x: 36, y: 73, w: 18, h: 18, color: '#aeaeb2' },
+                // Wash area equipment
+                { type: 'table-4ft', x: 2, y: 65, w: 48, h: 24, color: '#5ac8fa' },
+                { type: 'shelf', x: 2, y: 69, w: 48, h: 18, color: '#8e8e93' }
+            ]
+        };
+
+        function getItemsInZone(zone) {
+            return placedItems.filter(item => {
+                const iw = item.w / 12, ih = item.h / 12;
+                const itemCenterX = item.x + iw / 2;
+                const itemCenterY = item.y + ih / 2;
+                return itemCenterX >= zone.x && itemCenterX <= zone.x + zone.w &&
+                       itemCenterY >= zone.y && itemCenterY <= zone.y + zone.h;
+            });
+        }
+
+        function saveToFile() {
+            const data = { version: "1.0", name: "Cheeky Production Facility", savedAt: new Date().toISOString(), scale: SCALE, zones, items: placedItems };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `floor-plan-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showSaveIndicator('💾 Saved!');
+        }
+
+        function loadFromFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    zones = data.zones || [];
+                    placedItems = data.items || [];
+                    SCALE = data.scale || 8;
+                    currentFileName = file.name;
+                    document.getElementById('current-file').textContent = '📄 ' + file.name;
+                    updateZoomDisplay();
+                    saveToLocalStorage();
+                    resize();
+                    showSaveIndicator('✓ Loaded');
+                } catch (err) { alert('Error: ' + err.message); }
+            };
+            reader.readAsText(file);
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('cheeky-floor-plan', JSON.stringify({ zones, placedItems, scale: SCALE, fileName: currentFileName }));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('cheeky-floor-plan');
+            if (saved) {
+                const state = JSON.parse(saved);
+                zones = state.zones || [];
+                placedItems = state.placedItems || [];
+                SCALE = state.scale || 8;
+                // Sync zoom index
+                const idx = ZOOM_LEVELS.indexOf(SCALE);
+                currentZoomIndex = idx >= 0 ? idx : ZOOM_LEVELS.indexOf(8);
+                currentFileName = state.fileName;
+                if (currentFileName) document.getElementById('current-file').textContent = '📄 ' + currentFileName;
+                return true;
+            }
+            return false;
+        }
+
+        function loadDefaults() {
+            zones = JSON.parse(JSON.stringify(DEFAULT_LAYOUT.zones));
+            placedItems = JSON.parse(JSON.stringify(DEFAULT_LAYOUT.items));
+            SCALE = DEFAULT_LAYOUT.scale;
+            currentFileName = null;
+            document.getElementById('current-file').textContent = '';
+            saveToLocalStorage();
+        }
+
+        function showSaveIndicator(msg) {
+            const indicator = document.getElementById('save-indicator');
+            indicator.textContent = msg;
+            setTimeout(() => { indicator.textContent = ''; }, 2000);
+        }
+
+        function saveState(description) {
+            // Deep clone current state
+            const state = {
+                zones: JSON.parse(JSON.stringify(zones)),
+                items: JSON.parse(JSON.stringify(placedItems)),
+                description: description
+            };
+
+            undoStack.push(state);
+            if (undoStack.length > MAX_HISTORY) {
+                undoStack.shift(); // Remove oldest
+            }
+
+            // Clear redo stack on new action
+            redoStack = [];
+
+            updateUndoRedoButtons();
+        }
+
+        function undo() {
+            if (undoStack.length === 0) return;
+
+            // Save current state to redo stack
+            redoStack.push({
+                zones: JSON.parse(JSON.stringify(zones)),
+                items: JSON.parse(JSON.stringify(placedItems)),
+                description: 'Redo'
+            });
+
+            // Restore previous state
+            const state = undoStack.pop();
+            zones = state.zones;
+            placedItems = state.items;
+
+            selectedItems = [];
+            selectedZones = [];
+
+            saveToLocalStorage();
+            updateUndoRedoButtons();
+            updateSelectionInfo();
+            showSaveIndicator('↩ Undid: ' + state.description);
+            draw();
+        }
+
+        function redo() {
+            if (redoStack.length === 0) return;
+
+            // Save current state to undo stack
+            undoStack.push({
+                zones: JSON.parse(JSON.stringify(zones)),
+                items: JSON.parse(JSON.stringify(placedItems)),
+                description: 'Undo'
+            });
+
+            // Restore redo state
+            const state = redoStack.pop();
+            zones = state.zones;
+            placedItems = state.items;
+
+            selectedItems = [];
+            selectedZones = [];
+
+            saveToLocalStorage();
+            updateUndoRedoButtons();
+            updateSelectionInfo();
+            showSaveIndicator('↪ Redone');
+            draw();
+        }
+
+        function updateUndoRedoButtons() {
+            const undoBtn = document.getElementById('btn-undo');
+            const redoBtn = document.getElementById('btn-redo');
+
+            if (undoBtn) {
+                undoBtn.disabled = undoStack.length === 0;
+                undoBtn.title = undoStack.length > 0
+                    ? 'Undo: ' + undoStack[undoStack.length - 1].description + ' (Ctrl+Z)'
+                    : 'Nothing to undo';
+            }
+            if (redoBtn) {
+                redoBtn.disabled = redoStack.length === 0;
+                redoBtn.title = redoStack.length > 0 ? 'Redo (Ctrl+Y)' : 'Nothing to redo';
+            }
+        }
+
+        function updateZoomDisplay() {
+            document.getElementById('zoom-display').textContent = Math.round((SCALE / 8) * 100) + '%';
+        }
+
+        function getNextZoomLevel(direction) {
+            const newIndex = currentZoomIndex + direction;
+            if (newIndex >= 0 && newIndex < ZOOM_LEVELS.length) {
+                currentZoomIndex = newIndex;
+                return ZOOM_LEVELS[currentZoomIndex];
+            }
+            return SCALE;
+        }
+
+        function animateZoom(targetScale, centerX, centerY) {
+            if (zoomAnimation) cancelAnimationFrame(zoomAnimation);
+
+            const startScale = SCALE;
+            const startTime = performance.now();
+            const duration = 150; // ms
+
+            const container = document.getElementById('canvas-container');
+            const startScrollLeft = container.scrollLeft;
+            const startScrollTop = container.scrollTop;
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+
+                SCALE = startScale + (targetScale - startScale) * eased;
+
+                // Resize canvas
+                canvas.width = (BUILDING.width * SCALE) + 40;
+                canvas.height = (BUILDING.depth * SCALE) + 40;
+
+                // Adjust scroll to keep point under cursor
+                if (centerX !== undefined && centerY !== undefined) {
+                    const scaleRatio = SCALE / startScale;
+                    const newScrollLeft = (startScrollLeft + centerX) * scaleRatio - centerX;
+                    const newScrollTop = (startScrollTop + centerY) * scaleRatio - centerY;
+                    container.scrollLeft = newScrollLeft;
+                    container.scrollTop = newScrollTop;
+                }
+
+                draw();
+                updateZoomDisplay();
+
+                if (progress < 1) {
+                    zoomAnimation = requestAnimationFrame(animate);
+                } else {
+                    SCALE = targetScale;
+                    // Update currentZoomIndex to match
+                    const idx = ZOOM_LEVELS.indexOf(targetScale);
+                    if (idx >= 0) currentZoomIndex = idx;
+                    saveToLocalStorage();
+                    zoomAnimation = null;
+                    resize(); // Final resize to update centering
+                }
+            }
+
+            zoomAnimation = requestAnimationFrame(animate);
+        }
+
+        function centerCanvasView() {
+            const container = document.getElementById('canvas-container');
+            const scrollX = (container.scrollWidth - container.clientWidth) / 2;
+            const scrollY = (container.scrollHeight - container.clientHeight) / 2;
+            container.scrollLeft = Math.max(0, scrollX);
+            container.scrollTop = Math.max(0, scrollY);
+        }
+
+        function resize() {
+            canvas.width = (BUILDING.width * SCALE) + 40;
+            canvas.height = (BUILDING.depth * SCALE) + 40;
+
+            // Center canvas if smaller than container
+            const container = document.getElementById('canvas-container');
+            const containerWidth = container.clientWidth - 80; // minus padding
+            const containerHeight = container.clientHeight - 80;
+
+            if (canvas.width < containerWidth && canvas.height < containerHeight) {
+                container.style.alignItems = 'center';
+            } else {
+                container.style.alignItems = 'flex-start';
+            }
+
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const ox = 20, oy = 20;
+            
+            // Grid
+            if (showGrid) {
+                ctx.strokeStyle = '#f0f0f0';
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= BUILDING.width; x++) {
+                    ctx.beginPath(); ctx.moveTo(ox + x * SCALE, oy); ctx.lineTo(ox + x * SCALE, oy + BUILDING.depth * SCALE); ctx.stroke();
+                }
+                for (let y = 0; y <= BUILDING.depth; y++) {
+                    ctx.beginPath(); ctx.moveTo(ox, oy + y * SCALE); ctx.lineTo(ox + BUILDING.width * SCALE, oy + y * SCALE); ctx.stroke();
+                }
+                ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1.5;
+                for (let x = 0; x <= BUILDING.width; x += 10) {
+                    ctx.beginPath(); ctx.moveTo(ox + x * SCALE, oy); ctx.lineTo(ox + x * SCALE, oy + BUILDING.depth * SCALE); ctx.stroke();
+                }
+                for (let y = 0; y <= BUILDING.depth; y += 10) {
+                    ctx.beginPath(); ctx.moveTo(ox, oy + y * SCALE); ctx.lineTo(ox + BUILDING.width * SCALE, oy + y * SCALE); ctx.stroke();
+                }
+                if (SCALE >= 8) {
+                    ctx.fillStyle = '#999'; ctx.font = `${Math.max(9, SCALE)}px sans-serif`;
+                    for (let x = 0; x <= BUILDING.width; x += 10) ctx.fillText(x + "'", ox + x * SCALE + 3, oy + BUILDING.depth * SCALE + 14);
+                    for (let y = 0; y <= BUILDING.depth; y += 10) ctx.fillText(y + "'", ox - 18, oy + y * SCALE + 4);
+                }
+            }
+
+            // Zones (drawn first, behind items)
+            zones.forEach(zone => {
+                const colors = ZONE_COLORS[zone.type];
+                if (!colors) return;
+                const zx = ox + zone.x * SCALE, zy = oy + zone.y * SCALE, zw = zone.w * SCALE, zh = zone.h * SCALE;
+                const isSelected = selectedZones.includes(zone);
+
+                ctx.fillStyle = colors.fill;
+                ctx.fillRect(zx, zy, zw, zh);
+                ctx.strokeStyle = colors.border;
+                ctx.lineWidth = isSelected ? 4 : (zone === hoveredZone ? 3 : 2);
+                ctx.strokeRect(zx, zy, zw, zh);
+
+                // Selection highlight
+                if (isSelected) {
+                    ctx.setLineDash([6, 4]);
+                    ctx.strokeStyle = '#ff3b30';
+                    ctx.strokeRect(zx - 2, zy - 2, zw + 4, zh + 4);
+                    ctx.setLineDash([]);
+                }
+
+                // Label
+                ctx.fillStyle = colors.text;
+                const fontSize = Math.max(11, Math.min(14, SCALE * 1.5));
+                ctx.font = `600 ${fontSize}px -apple-system, sans-serif`;
+                ctx.fillText(zone.label, zx + 6, zy + fontSize + 4);
+
+                // Size hint if large enough
+                if (SCALE >= 8 && zw > 60) {
+                    ctx.fillStyle = colors.border;
+                    ctx.font = `500 ${Math.max(9, SCALE * 0.8)}px sans-serif`;
+                    ctx.fillText(`${zone.w}'×${zone.h}'`, zx + 6, zy + fontSize + 18);
+                }
+            });
+
+            // Building outline (no stairs!)
+            const w = BUILDING.width * SCALE, d = BUILDING.depth * SCALE;
+            ctx.strokeStyle = '#1d1d1f'; ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(ox, oy);
+            ctx.lineTo(ox + w, oy);
+            ctx.lineTo(ox + w, oy + d);
+            ctx.lineTo(ox + w/2 + 3*SCALE, oy + d);
+            ctx.lineTo(ox + w/2 + 3*SCALE, oy + d - 4*SCALE);
+            ctx.lineTo(ox + w/2 - 3*SCALE, oy + d - 4*SCALE);
+            ctx.lineTo(ox + w/2 - 3*SCALE, oy + d);
+            ctx.lineTo(ox, oy + d);
+            ctx.lineTo(ox, oy);
+            ctx.stroke();
+
+            // Office (very bottom left corner)
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(ox, oy + d - 10*SCALE, 10*SCALE, 10*SCALE);
+            ctx.strokeStyle = '#86868b'; ctx.lineWidth = 2;
+            ctx.strokeRect(ox, oy + d - 10*SCALE, 10*SCALE, 10*SCALE);
+            ctx.fillStyle = '#5856d6'; ctx.font = `600 ${Math.max(10, SCALE)}px sans-serif`;
+            ctx.fillText('Office', ox + 2*SCALE, oy + d - 4*SCALE);
+            
+            // Bathroom/WC (above office)
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(ox, oy + d - 22*SCALE, 10*SCALE, 12*SCALE);
+            ctx.strokeStyle = '#86868b'; ctx.lineWidth = 2;
+            ctx.strokeRect(ox, oy + d - 22*SCALE, 10*SCALE, 12*SCALE);
+            ctx.fillStyle = '#86868b'; ctx.font = `500 ${Math.max(10, SCALE)}px sans-serif`;
+            ctx.fillText('WC', ox + 3*SCALE, oy + d - 15*SCALE);
+            
+            // Drain marker (above bathroom)
+            if (SCALE >= 8) {
+                ctx.fillStyle = '#5ac8fa';
+                ctx.beginPath();
+                ctx.arc(ox + 5*SCALE, oy + d - 26*SCALE, SCALE * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#0077b3'; ctx.font = `500 ${Math.max(8, SCALE * 0.7)}px sans-serif`;
+                ctx.fillText('DRAIN', ox + 2*SCALE, oy + d - 28*SCALE);
+            }
+
+            // Overhead doors
+            ctx.fillStyle = '#c9a66b';
+            ctx.fillRect(ox + 12*SCALE, oy, 12*SCALE, 2*SCALE);
+            ctx.fillRect(ox + 28*SCALE, oy, 12*SCALE, 2*SCALE);
+            ctx.strokeStyle = '#8a6d3b'; ctx.lineWidth = 1.5;
+            ctx.strokeRect(ox + 12*SCALE, oy, 12*SCALE, 2*SCALE);
+            ctx.strokeRect(ox + 28*SCALE, oy, 12*SCALE, 2*SCALE);
+            if (SCALE >= 8) {
+                ctx.fillStyle = '#48484a'; ctx.font = `600 ${Math.max(9, SCALE * 0.9)}px sans-serif`;
+                ctx.fillText('OVERHEAD DOOR', ox + 12*SCALE + 4, oy - 5);
+                ctx.fillText('OVERHEAD DOOR', ox + 28*SCALE + 4, oy - 5);
+            }
+
+            // Entry door
+            ctx.fillStyle = '#c9a66b';
+            ctx.fillRect(ox + w/2 - 2*SCALE, oy + d - 4*SCALE, 4*SCALE, 1*SCALE);
+            if (SCALE >= 8) { ctx.fillStyle = '#48484a'; ctx.fillText('ENTRY', ox + w/2 - 15, oy + d - 4*SCALE - 5); }
+
+            // Dimensions
+            if (SCALE >= 6) {
+                ctx.fillStyle = '#007aff'; ctx.font = `600 ${Math.max(11, SCALE * 1.2)}px sans-serif`;
+                ctx.fillText("47'-0\"", ox + w/2 - 25, oy - 8);
+                ctx.save(); ctx.translate(ox - 10, oy + d/2 + 25); ctx.rotate(-Math.PI/2);
+                ctx.fillText("100'-0\"", 0, 0); ctx.restore();
+            }
+
+            // Items
+            placedItems.forEach(item => {
+                const x = ox + item.x * SCALE, y = oy + item.y * SCALE;
+                const iw = (item.w / 12) * SCALE, ih = (item.h / 12) * SCALE;
+                const isSelected = selectedItems.includes(item);
+
+                ctx.fillStyle = item.color;
+                ctx.fillRect(x, y, iw, ih);
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, iw, ih);
+
+                if (item === hoveredItem && !isSelected) { ctx.strokeStyle = '#007aff'; ctx.lineWidth = 2; ctx.strokeRect(x - 1, y - 1, iw + 2, ih + 2); }
+                if (isSelected) { ctx.strokeStyle = '#ff3b30'; ctx.lineWidth = 3; ctx.strokeRect(x - 2, y - 2, iw + 4, ih + 4); }
+
+                if (SCALE >= 12 && iw > 30 && ih > 20) {
+                    ctx.fillStyle = '#fff'; ctx.font = `500 ${Math.min(12, SCALE * 0.8)}px sans-serif`;
+                    ctx.fillText(ITEM_NAMES[item.type] || item.type, x + 4, y + 12);
+                }
+            });
+
+            // Draw marquee selection rectangle
+            if (selectionRect) {
+                ctx.strokeStyle = '#007aff';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                const rx = ox + Math.min(selectionRect.x1, selectionRect.x2) * SCALE;
+                const ry = oy + Math.min(selectionRect.y1, selectionRect.y2) * SCALE;
+                const rw = Math.abs(selectionRect.x2 - selectionRect.x1) * SCALE;
+                const rh = Math.abs(selectionRect.y2 - selectionRect.y1) * SCALE;
+                ctx.strokeRect(rx, ry, rw, rh);
+                ctx.fillStyle = 'rgba(0, 122, 255, 0.1)';
+                ctx.fillRect(rx, ry, rw, rh);
+                ctx.setLineDash([]);
+            }
+
+            // Measure line
+            if (measureStart && currentTool === 'measure') {
+                ctx.strokeStyle = '#ff3b30'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+                ctx.beginPath(); ctx.moveTo(measureStart.x, measureStart.y);
+                ctx.lineTo(measureStart.endX || measureStart.x, measureStart.endY || measureStart.y);
+                ctx.stroke(); ctx.setLineDash([]);
+            }
+        }
+
+        function showTooltip(content, x, y) {
+            tooltip.innerHTML = content;
+            tooltip.style.display = 'block';
+            tooltip.style.left = Math.min(x + 15, window.innerWidth - 240) + 'px';
+            tooltip.style.top = (y + 15) + 'px';
+        }
+
+        function hideTooltip() { tooltip.style.display = 'none'; }
+
+        function getZoneAt(x, y) {
+            for (let i = zones.length - 1; i >= 0; i--) {
+                const z = zones[i];
+                if (x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h) return z;
+            }
+            return null;
+        }
+
+        // Detect if mouse is near a zone edge (returns edge name or null)
+        function getZoneEdge(x, y, zone) {
+            const threshold = 1.5; // feet from edge
+            const inX = x >= zone.x - threshold && x <= zone.x + zone.w + threshold;
+            const inY = y >= zone.y - threshold && y <= zone.y + zone.h + threshold;
+            if (!inX || !inY) return null;
+            
+            const nearLeft = Math.abs(x - zone.x) < threshold;
+            const nearRight = Math.abs(x - (zone.x + zone.w)) < threshold;
+            const nearTop = Math.abs(y - zone.y) < threshold;
+            const nearBottom = Math.abs(y - (zone.y + zone.h)) < threshold;
+            
+            // Corners first
+            if (nearTop && nearLeft) return 'nw';
+            if (nearTop && nearRight) return 'ne';
+            if (nearBottom && nearLeft) return 'sw';
+            if (nearBottom && nearRight) return 'se';
+            // Edges
+            if (nearTop && x > zone.x && x < zone.x + zone.w) return 'n';
+            if (nearBottom && x > zone.x && x < zone.x + zone.w) return 's';
+            if (nearLeft && y > zone.y && y < zone.y + zone.h) return 'w';
+            if (nearRight && y > zone.y && y < zone.y + zone.h) return 'e';
+            return null;
+        }
+
+        function getResizeCursor(edge) {
+            const cursors = {
+                'n': 'ns-resize', 's': 'ns-resize',
+                'e': 'ew-resize', 'w': 'ew-resize',
+                'nw': 'nwse-resize', 'se': 'nwse-resize',
+                'ne': 'nesw-resize', 'sw': 'nesw-resize'
+            };
+            return cursors[edge] || 'default';
+        }
+
+        function getItemAt(x, y) {
+            for (let i = placedItems.length - 1; i >= 0; i--) {
+                const item = placedItems[i], iw = item.w / 12, ih = item.h / 12;
+                if (x >= item.x && x <= item.x + iw && y >= item.y && y <= item.y + ih) return item;
+            }
+            return null;
+        }
+
+        function selectItemsInRect(rect, addToSelection) {
+            const minX = Math.min(rect.x1, rect.x2);
+            const maxX = Math.max(rect.x1, rect.x2);
+            const minY = Math.min(rect.y1, rect.y2);
+            const maxY = Math.max(rect.y1, rect.y2);
+
+            // Select items within rect
+            placedItems.forEach(item => {
+                const iw = item.w / 12, ih = item.h / 12;
+                // Check if item overlaps with selection rect
+                if (item.x + iw >= minX && item.x <= maxX &&
+                    item.y + ih >= minY && item.y <= maxY) {
+                    if (!selectedItems.includes(item)) selectedItems.push(item);
+                }
+            });
+
+            // Select zones within rect
+            zones.forEach(zone => {
+                // Check if zone overlaps with selection rect
+                if (zone.x + zone.w >= minX && zone.x <= maxX &&
+                    zone.y + zone.h >= minY && zone.y <= maxY) {
+                    if (!selectedZones.includes(zone)) selectedZones.push(zone);
+                }
+            });
+        }
+
+        // Event handlers
+        document.querySelectorAll('.equipment-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('type', item.dataset.type);
+                e.dataTransfer.setData('w', item.dataset.w);
+                e.dataTransfer.setData('h', item.dataset.h);
+                e.dataTransfer.setData('color', item.dataset.color);
+            });
+        });
+
+        canvas.addEventListener('dragover', (e) => e.preventDefault());
+        canvas.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const itemType = e.dataTransfer.getData('type');
+
+            // Save state before adding item
+            saveState(`Add ${ITEM_NAMES[itemType] || itemType}`);
+
+            placedItems.push({
+                type: itemType,
+                x: Math.round(((e.clientX - rect.left - 20) / SCALE) * 2) / 2,
+                y: Math.round(((e.clientY - rect.top - 20) / SCALE) * 2) / 2,
+                w: parseInt(e.dataTransfer.getData('w')),
+                h: parseInt(e.dataTransfer.getData('h')),
+                color: e.dataTransfer.getData('color')
+            });
+            saveToLocalStorage(); showSaveIndicator('✓ Saved'); draw();
+        });
+
+        document.querySelectorAll('.zone-item').forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove selected from all zone items
+                document.querySelectorAll('.zone-item').forEach(z => z.classList.remove('selected'));
+                // Add selected to clicked item
+                item.classList.add('selected');
+                currentZoneType = item.dataset.zone;
+                currentTool = 'zone';
+                updateToolButtons();
+            });
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - 20) / SCALE, y = (e.clientY - rect.top - 20) / SCALE;
+
+            if (currentTool === 'select') {
+                const item = getItemAt(x, y);
+
+                // Check for zone edge resize first
+                let foundEdge = null, edgeZone = null;
+                for (let i = zones.length - 1; i >= 0; i--) {
+                    const edge = getZoneEdge(x, y, zones[i]);
+                    if (edge) { foundEdge = edge; edgeZone = zones[i]; break; }
+                }
+
+                if (item && !foundEdge) {
+                    // Item clicked
+                    if (e.shiftKey) {
+                        // Toggle selection
+                        const idx = selectedItems.indexOf(item);
+                        if (idx >= 0) selectedItems.splice(idx, 1);
+                        else selectedItems.push(item);
+                    } else if (e.ctrlKey || e.metaKey) {
+                        // Add to selection
+                        if (!selectedItems.includes(item)) selectedItems.push(item);
+                    } else {
+                        // Single select (clear others)
+                        if (!selectedItems.includes(item)) {
+                            selectedItems = [item];
+                            selectedZones = [];
+                        }
+                    }
+                    // Save state before potential move
+                    saveState(`Move ${ITEM_NAMES[item.type] || item.type}`);
+                    dragItem = item;
+                    dragOffset = { x: x - item.x, y: y - item.y };
+                    updateSelectionInfo();
+                } else if (foundEdge) {
+                    // Save state before resize
+                    saveState(`Resize ${edgeZone.label}`);
+                    // Start resizing
+                    resizingZone = edgeZone;
+                    resizeEdge = foundEdge;
+                    if (!selectedZones.includes(edgeZone)) {
+                        selectedZones = [edgeZone];
+                        selectedItems = [];
+                    }
+                    document.getElementById('selected-details').innerHTML = `
+                        <strong style="color:#1d1d1f">${edgeZone.label}</strong><br>
+                        <span style="color:#007aff">Resizing ${foundEdge.toUpperCase()} edge...</span>
+                    `;
+                } else {
+                    const zone = getZoneAt(x, y);
+                    if (zone) {
+                        // Zone clicked
+                        if (e.shiftKey) {
+                            // Toggle selection
+                            const idx = selectedZones.indexOf(zone);
+                            if (idx >= 0) selectedZones.splice(idx, 1);
+                            else selectedZones.push(zone);
+                        } else if (e.ctrlKey || e.metaKey) {
+                            // Add to selection
+                            if (!selectedZones.includes(zone)) selectedZones.push(zone);
+                        } else {
+                            // Single select (clear others)
+                            if (!selectedZones.includes(zone)) {
+                                selectedZones = [zone];
+                                selectedItems = [];
+                            }
+                        }
+                        // Save state before potential move
+                        saveState(`Move ${zone.label}`);
+                        dragZone = zone;
+                        dragZone.itemsToMove = getItemsInZone(zone);
+                        dragOffset = { x: x - zone.x, y: y - zone.y };
+                        updateSelectionInfo();
+                    } else {
+                        // Empty space clicked - start marquee selection
+                        if (!e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                            selectedItems = [];
+                            selectedZones = [];
+                        }
+                        selectionRect = { x1: x, y1: y, x2: x, y2: y };
+                        updateSelectionInfo();
+                    }
+                }
+                draw();
+            } else if (currentTool === 'zone' && currentZoneType) {
+                zoneStart = { x: Math.round(x), y: Math.round(y) };
+                isDrawingZone = true;
+            } else if (currentTool === 'measure') {
+                measureStart = { x: e.clientX - rect.left, y: e.clientY - rect.top, startFt: { x, y } };
+            }
+        });
+
+        function updateSelectionInfo() {
+            const totalItems = selectedItems.length;
+            const totalZones = selectedZones.length;
+            let html = '';
+
+            if (totalItems === 0 && totalZones === 0) {
+                html = `Hover to preview<br>Click to select<br>Shift+click to multi-select<br>Drag on empty space for marquee<br>Delete to remove`;
+            } else if (totalItems === 1 && totalZones === 0) {
+                const item = selectedItems[0];
+                html = `<strong style="color:#1d1d1f">${ITEM_NAMES[item.type] || item.type}</strong><br>
+                    Size: ${item.w}" × ${item.h}"<br>
+                    Position: (${item.x.toFixed(1)}', ${item.y.toFixed(1)}')<br>
+                    <span style="color:#ff3b30">Delete to remove</span>`;
+            } else if (totalZones === 1 && totalItems === 0) {
+                const zone = selectedZones[0];
+                const itemsInZone = getItemsInZone(zone).length;
+                html = `<strong style="color:#1d1d1f">${zone.label}</strong><br>
+                    Size: ${zone.w}' × ${zone.h}'<br>
+                    Position: (${zone.x}', ${zone.y}')<br>
+                    Items inside: ${itemsInZone}<br>
+                    <span style="color:#007aff">Drag edges to resize</span><br>
+                    <span style="color:#ff3b30">Delete to remove zone</span>`;
+            } else {
+                html = `<strong style="color:#007aff">${totalItems + totalZones} items selected</strong><br>`;
+                if (totalItems > 0) html += `${totalItems} equipment item${totalItems > 1 ? 's' : ''}<br>`;
+                if (totalZones > 0) html += `${totalZones} zone${totalZones > 1 ? 's' : ''}<br>`;
+                html += `<span style="color:#ff3b30">Delete to remove all</span><br>
+                    <span style="color:#86868b">Ctrl+A to select all</span>`;
+            }
+            document.getElementById('selected-details').innerHTML = html;
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - 20) / SCALE, y = (e.clientY - rect.top - 20) / SCALE;
+
+            // Marquee selection dragging
+            if (selectionRect) {
+                selectionRect.x2 = x;
+                selectionRect.y2 = y;
+                draw();
+                return;
+            }
+
+            if (currentTool === 'select' && !dragItem && !dragZone && !resizingZone) {
+                const item = getItemAt(x, y);
+                
+                // Check for edge hover
+                let foundEdge = null, edgeZone = null;
+                for (let i = zones.length - 1; i >= 0; i--) {
+                    const edge = getZoneEdge(x, y, zones[i]);
+                    if (edge) { foundEdge = edge; edgeZone = zones[i]; break; }
+                }
+                
+                const zone = !item && !foundEdge ? getZoneAt(x, y) : null;
+                
+                if (item !== hoveredItem || zone !== hoveredZone) {
+                    hoveredItem = item; hoveredZone = zone;
+                    draw();
+                }
+                
+                if (foundEdge) {
+                    showTooltip(`
+                        <div class="tt-title">${edgeZone.label}</div>
+                        <div class="tt-dims">${edgeZone.w}' × ${edgeZone.h}'</div>
+                        <div class="tt-hint">Drag to resize</div>
+                    `, e.clientX, e.clientY);
+                    canvas.style.cursor = getResizeCursor(foundEdge);
+                } else if (item) {
+                    showTooltip(`
+                        <div class="tt-title">${ITEM_NAMES[item.type] || item.type}</div>
+                        <div class="tt-dims">${item.w}" × ${item.h}"</div>
+                        <div class="tt-pos">Position: (${item.x.toFixed(1)}', ${item.y.toFixed(1)}')</div>
+                    `, e.clientX, e.clientY);
+                    canvas.style.cursor = 'grab';
+                } else if (zone) {
+                    const itemCount = getItemsInZone(zone).length;
+                    showTooltip(`
+                        <div class="tt-title">${zone.label}</div>
+                        <div class="tt-dims">${zone.w}' × ${zone.h}' (${zone.w * zone.h} sq ft)</div>
+                        <div class="tt-pos">Contains ${itemCount} items</div>
+                        <div class="tt-hint">Drag center to move, edges to resize</div>
+                    `, e.clientX, e.clientY);
+                    canvas.style.cursor = 'move';
+                } else {
+                    hideTooltip();
+                    canvas.style.cursor = 'crosshair';
+                }
+            }
+
+            if (dragItem) {
+                dragItem.x = Math.round((x - dragOffset.x) * 2) / 2;
+                dragItem.y = Math.round((y - dragOffset.y) * 2) / 2;
+                hideTooltip(); draw();
+            }
+            
+            if (dragZone) {
+                const dx = Math.round(x - dragOffset.x) - dragZone.x;
+                const dy = Math.round(y - dragOffset.y) - dragZone.y;
+                dragZone.x += dx; dragZone.y += dy;
+                dragZone.itemsToMove.forEach(item => { item.x += dx; item.y += dy; });
+                hideTooltip(); draw();
+            }
+            
+            if (resizingZone) {
+                const z = resizingZone;
+                const rx = Math.round(x), ry = Math.round(y);
+                const minSize = 3; // minimum 3 feet
+                
+                if (resizeEdge.includes('n')) {
+                    const newY = Math.min(ry, z.y + z.h - minSize);
+                    z.h += z.y - newY;
+                    z.y = newY;
+                }
+                if (resizeEdge.includes('s')) {
+                    z.h = Math.max(minSize, ry - z.y);
+                }
+                if (resizeEdge.includes('w')) {
+                    const newX = Math.min(rx, z.x + z.w - minSize);
+                    z.w += z.x - newX;
+                    z.x = newX;
+                }
+                if (resizeEdge.includes('e')) {
+                    z.w = Math.max(minSize, rx - z.x);
+                }
+                
+                document.getElementById('selected-details').innerHTML = `
+                    <strong style="color:#1d1d1f">${z.label}</strong><br>
+                    Size: ${z.w}' × ${z.h}' (${z.w * z.h} sq ft)<br>
+                    <span style="color:#007aff">Resizing...</span>
+                `;
+                hideTooltip(); draw();
+            }
+            
+            if (measureStart && currentTool === 'measure') {
+                measureStart.endX = e.clientX - rect.left;
+                measureStart.endY = e.clientY - rect.top;
+                const dx = x - measureStart.startFt.x, dy = y - measureStart.startFt.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                document.getElementById('selected-details').innerHTML = `
+                    <strong style="color:#ff3b30">Measuring</strong><br>
+                    Distance: ${dist.toFixed(1)}' (${(dist*12).toFixed(0)}")<br>
+                    Δx: ${Math.abs(dx).toFixed(1)}' | Δy: ${Math.abs(dy).toFixed(1)}'
+                `;
+                draw();
+            }
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            hideTooltip();
+            if (hoveredItem || hoveredZone) { hoveredItem = null; hoveredZone = null; draw(); }
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (dragItem || dragZone || resizingZone) { saveToLocalStorage(); showSaveIndicator('✓ Saved'); }
+
+            // Finalize marquee selection
+            if (selectionRect) {
+                selectItemsInRect(selectionRect, e.shiftKey || e.ctrlKey || e.metaKey);
+                selectionRect = null;
+                updateSelectionInfo();
+                draw();
+            }
+
+            if (isDrawingZone && zoneStart) {
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left - 20) / SCALE, y = (e.clientY - rect.top - 20) / SCALE;
+                const labels = { prep:'Ingredient Prep', mixing:'Mixing', molding:'Molding', cutting:'Cutting',
+                    drying:'Drying Room', boxing:'Boxing', storage:'Storage', office:'Office', break:'Break', shipping:'Shipping', wash:'Wash/Cleaning' };
+                const zw = Math.abs(Math.round(x) - zoneStart.x), zh = Math.abs(Math.round(y) - zoneStart.y);
+                if (zw > 1 && zh > 1) {
+                    // Save state before creating zone
+                    saveState(`Create ${labels[currentZoneType] || currentZoneType} zone`);
+                    zones.push({ type: currentZoneType, label: labels[currentZoneType] || currentZoneType,
+                        x: Math.min(zoneStart.x, Math.round(x)), y: Math.min(zoneStart.y, Math.round(y)), w: zw, h: zh });
+                    saveToLocalStorage(); showSaveIndicator('✓ Saved');
+                }
+                draw();
+            }
+            
+            if (dragZone) delete dragZone.itemsToMove;
+            dragItem = null; dragZone = null; resizingZone = null; resizeEdge = null;
+            isDrawingZone = false; zoneStart = null; measureStart = null;
+        });
+
+        document.addEventListener('keydown', (e) => {
+            // ESC to cancel drawing mode or deselect
+            if (e.key === 'Escape') {
+                if (currentTool === 'zone' || currentTool === 'measure') {
+                    currentTool = 'select';
+                    currentZoneType = null;
+                    isDrawingZone = false;
+                    zoneStart = null;
+                    measureStart = null;
+                    updateToolButtons();
+                }
+                // Deselect all
+                selectedItems = [];
+                selectedZones = [];
+                updateSelectionInfo();
+                draw();
+            }
+
+            // Ctrl+A to select all
+            if ((e.ctrlKey || e.metaKey) && e.key === 'a' && e.target === document.body) {
+                e.preventDefault();
+                selectedItems = [...placedItems];
+                selectedZones = [...zones];
+                updateSelectionInfo();
+                draw();
+            }
+
+            // Delete selected items
+            if ((e.key === 'Delete' || e.key === 'Backspace') && e.target === document.body) {
+                e.preventDefault();
+                const itemCount = selectedItems.length;
+                const zoneCount = selectedZones.length;
+
+                if (itemCount > 0 || zoneCount > 0) {
+                    // Save state before delete
+                    saveState(`Delete ${itemCount + zoneCount} item(s)`);
+
+                    placedItems = placedItems.filter(i => !selectedItems.includes(i));
+                    zones = zones.filter(z => !selectedZones.includes(z));
+                    selectedItems = [];
+                    selectedZones = [];
+                    saveToLocalStorage();
+                    showSaveIndicator(`✓ Deleted ${itemCount + zoneCount} item(s)`);
+                    updateSelectionInfo();
+                    draw();
+                }
+            }
+
+            // Undo shortcut
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+            }
+
+            // Redo shortcut
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                redo();
+            }
+        });
+
+        function updateToolButtons() {
+            document.querySelectorAll('#toolbar button').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + currentTool)?.classList.add('active');
+            updateModeIndicator();
+        }
+
+        function updateModeIndicator() {
+            const indicator = document.getElementById('mode-indicator');
+            const modeText = document.getElementById('mode-text');
+            const modeColor = document.getElementById('mode-color');
+
+            if (currentTool === 'zone' && currentZoneType) {
+                const colors = ZONE_COLORS[currentZoneType];
+                const labels = { prep:'Ingredient Prep', mixing:'Mixing', molding:'Molding', cutting:'Cutting',
+                    drying:'Drying Room', boxing:'Boxing', storage:'Storage', office:'Office', break:'Break', shipping:'Shipping', wash:'Wash/Cleaning' };
+                indicator.classList.remove('hidden');
+                modeText.textContent = `Drawing: ${labels[currentZoneType] || currentZoneType} zone`;
+                modeColor.style.background = colors?.border || '#007aff';
+                canvas.style.cursor = 'crosshair';
+            } else if (currentTool === 'measure') {
+                indicator.classList.remove('hidden');
+                modeText.textContent = 'Measure: Click and drag';
+                modeColor.style.background = '#ff3b30';
+                canvas.style.cursor = 'crosshair';
+            } else {
+                indicator.classList.add('hidden');
+                // Clear zone item selection when not in zone mode
+                document.querySelectorAll('.zone-item').forEach(z => z.classList.remove('selected'));
+                canvas.style.cursor = currentTool === 'select' ? 'default' : 'crosshair';
+            }
+        }
+
+        document.getElementById('btn-select').onclick = () => { currentTool = 'select'; updateToolButtons(); };
+        document.getElementById('btn-zone').onclick = () => { currentTool = 'zone'; updateToolButtons(); };
+        document.getElementById('btn-measure').onclick = () => { currentTool = 'measure'; updateToolButtons(); };
+        document.getElementById('btn-grid').onclick = () => { showGrid = !showGrid; draw(); };
+        document.getElementById('btn-clear').onclick = () => {
+            if (confirm('Clear all?')) {
+                saveState('Clear all');
+                placedItems = [];
+                zones = [];
+                selectedItems = [];
+                selectedZones = [];
+                saveToLocalStorage();
+                updateSelectionInfo();
+                draw();
+            }
+        };
+        document.getElementById('btn-reset').onclick = () => {
+            if (confirm('Reset to default?')) {
+                saveState('Reset to default');
+                loadDefaults();
+                selectedItems = [];
+                selectedZones = [];
+                updateSelectionInfo();
+                resize();
+            }
+        };
+        document.getElementById('btn-export').onclick = () => { const a = document.createElement('a'); a.download = 'floor-plan.png'; a.href = canvas.toDataURL(); a.click(); };
+        document.getElementById('btn-undo').onclick = undo;
+        document.getElementById('btn-redo').onclick = redo;
+        // ============ PROJECT FUNCTIONS ============
+        
+        async function loadProjectsList() {
+            try {
+                const res = await fetch('/api/projects');
+                const projects = await res.json();
+                
+                // Update dropdown
+                const select = document.getElementById('project-select');
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">Select Project...</option>' + 
+                    projects.map(p => `<option value="${p.id}" ${p.id == currentProjectId ? 'selected' : ''}>${p.name}</option>`).join('');
+                
+                // Update modal list
+                const listEl = document.getElementById('projects-list');
+                if (projects.length === 0) {
+                    listEl.innerHTML = '<div class="no-versions">No projects yet.<br>Create your first project above!</div>';
+                    return;
+                }
+                
+                listEl.innerHTML = projects.map(p => `
+                    <div class="project-item ${p.id == currentProjectId ? 'active' : ''}" data-id="${p.id}">
+                        <div class="project-info">
+                            <div class="project-name">${p.name}</div>
+                            <div class="project-meta">${p.layoutCount || 0} versions${p.lastSaved ? ' • Last saved ' + new Date(p.lastSaved).toLocaleDateString() : ''}</div>
+                        </div>
+                        <div class="project-actions">
+                            <button onclick="switchProject(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="load-btn">Open</button>
+                            <button onclick="deleteProject(${p.id}, event)" class="btn-delete">×</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading projects:', err);
+            }
+        }
+        
+        async function createProject() {
+            const name = document.getElementById('new-project-name').value.trim();
+            const desc = document.getElementById('new-project-desc').value.trim();
+            
+            if (!name) {
+                alert('Please enter a project name');
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description: desc })
+                });
+                const project = await res.json();
+                
+                document.getElementById('new-project-name').value = '';
+                document.getElementById('new-project-desc').value = '';
+                
+                // Switch to new project
+                switchProject(project.id, project.name);
+                loadProjectsList();
+                showSaveIndicator('✓ Project created!');
+            } catch (err) {
+                alert('Failed to create project: ' + err.message);
+            }
+        }
+        
+        async function switchProject(projectId, projectName) {
+            currentProjectId = projectId;
+            currentProjectName = projectName;
+            
+            // Update dropdown
+            document.getElementById('project-select').value = projectId;
+            
+            // Clear current layout
+            placedItems = [];
+            zones = [];
+            currentFileName = null;
+            document.getElementById('current-file').textContent = '';
+            
+            // Save to localStorage
+            localStorage.setItem('floorplan_currentProject', JSON.stringify({ id: projectId, name: projectName }));
+            
+            // Load the most recent version if available
+            try {
+                const res = await fetch(`/api/projects/${projectId}/layouts`);
+                const versions = await res.json();
+                if (versions.length > 0) {
+                    await loadVersion(versions[0].filename);
+                } else {
+                    loadDefaults();
+                    resize();
+                }
+            } catch (err) {
+                loadDefaults();
+                resize();
+            }
+            
+            closeProjectsModal();
+            showSaveIndicator('📁 ' + projectName);
+        }
+        
+        async function deleteProject(projectId, event) {
+            event.stopPropagation();
+            if (!confirm('Delete this project and ALL its versions? This cannot be undone.')) return;
+            
+            try {
+                await fetch('/api/projects/' + projectId, { method: 'DELETE' });
+                
+                if (currentProjectId == projectId) {
+                    currentProjectId = null;
+                    currentProjectName = null;
+                    localStorage.removeItem('floorplan_currentProject');
+                    document.getElementById('project-select').value = '';
+                    placedItems = [];
+                    zones = [];
+                    loadDefaults();
+                    resize();
+                }
+                
+                loadProjectsList();
+                showSaveIndicator('✓ Project deleted');
+            } catch (err) {
+                alert('Failed to delete: ' + err.message);
+            }
+        }
+        
+        function openProjectsModal() {
+            document.getElementById('projects-modal').classList.add('active');
+            loadProjectsList();
+        }
+        
+        function closeProjectsModal() {
+            document.getElementById('projects-modal').classList.remove('active');
+        }
+        
+        document.getElementById('projects-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeProjectsModal();
+        });
+        
+        document.getElementById('project-select').addEventListener('change', (e) => {
+            const projectId = e.target.value;
+            if (projectId) {
+                const name = e.target.options[e.target.selectedIndex].text;
+                switchProject(projectId, name);
+            }
+        });
+        
+        // ============ VERSION CONTROL FUNCTIONS ============
+        
+        async function loadVersionsList() {
+            const listEl = document.getElementById('versions-list');
+            
+            if (!currentProjectId) {
+                listEl.innerHTML = '<div class="no-versions">Please select or create a project first.</div>';
+                return;
+            }
+            
+            try {
+                const res = await fetch(`/api/projects/${currentProjectId}/layouts`);
+                const versions = await res.json();
+                
+                if (versions.length === 0) {
+                    listEl.innerHTML = '<div class="no-versions">No saved versions yet.<br>Save your first version above!</div>';
+                    return;
+                }
+                
+                listEl.innerHTML = versions.map(v => `
+                    <div class="version-item" data-filename="${v.filename}">
+                        <div class="version-info">
+                            <div class="version-name">${v.name}</div>
+                            <div class="version-date">${new Date(v.savedAt).toLocaleString()}</div>
+                        </div>
+                        <div class="version-actions">
+                            <button onclick="loadVersion('${v.filename}')" class="load-btn">Load</button>
+                            <button onclick="deleteVersion('${v.filename}', event)" class="btn-delete">×</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                listEl.innerHTML = '<div class="no-versions">Could not load versions.<br>Server may be offline.</div>';
+            }
+        }
+        
+        async function saveVersion() {
+            if (!currentProjectId) {
+                alert('Please select or create a project first.');
+                openProjectsModal();
+                return;
+            }
+            
+            const name = document.getElementById('save-name').value.trim() || 'Untitled';
+            const data = { 
+                version: "1.0", 
+                name: name,
+                scale: SCALE, 
+                zones, 
+                items: placedItems 
+            };
+            
+            try {
+                const res = await fetch(`/api/projects/${currentProjectId}/layouts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    document.getElementById('save-name').value = '';
+                    showSaveIndicator('✓ Version saved!');
+                    loadVersionsList();
+                }
+            } catch (err) {
+                alert('Failed to save: ' + err.message);
+            }
+        }
+        
+        async function loadVersion(filename) {
+            if (!currentProjectId) return;
+
+            try {
+                const res = await fetch(`/api/projects/${currentProjectId}/layouts/${filename}`);
+                const data = await res.json();
+                zones = data.zones || [];
+                placedItems = data.items || [];
+                SCALE = data.scale || 8;
+                // Sync zoom index
+                const idx = ZOOM_LEVELS.indexOf(SCALE);
+                currentZoomIndex = idx >= 0 ? idx : ZOOM_LEVELS.indexOf(8);
+                currentFileName = data.name;
+                document.getElementById('current-file').textContent = '📄 ' + data.name;
+                updateZoomDisplay();
+                saveToLocalStorage();
+                resize();
+                closeVersionsModal();
+                showSaveIndicator('✓ Loaded: ' + data.name);
+            } catch (err) {
+                alert('Failed to load: ' + err.message);
+            }
+        }
+        
+        async function deleteVersion(filename, event) {
+            event.stopPropagation();
+            if (!currentProjectId) return;
+            if (!confirm('Delete this version?')) return;
+            
+            try {
+                await fetch(`/api/projects/${currentProjectId}/layouts/${filename}`, { method: 'DELETE' });
+                loadVersionsList();
+                showSaveIndicator('✓ Deleted');
+            } catch (err) {
+                alert('Failed to delete: ' + err.message);
+            }
+        }
+        
+        function openVersionsModal() {
+            if (!currentProjectId) {
+                alert('Please select or create a project first.');
+                openProjectsModal();
+                return;
+            }
+            document.getElementById('versions-modal').classList.add('active');
+            loadVersionsList();
+        }
+        
+        function closeVersionsModal() {
+            document.getElementById('versions-modal').classList.remove('active');
+        }
+        
+        // Close modal on overlay click
+        document.getElementById('versions-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeVersionsModal();
+        });
+        
+        document.getElementById('btn-save-version').onclick = saveVersion;
+        document.getElementById('btn-versions').onclick = openVersionsModal;
+        document.getElementById('btn-save').onclick = saveVersion;
+        document.getElementById('btn-load-file').onclick = () => document.getElementById('file-input').click();
+        document.getElementById('file-input').onchange = (e) => { if (e.target.files[0]) loadFromFile(e.target.files[0]); };
+
+        document.getElementById('btn-zoom-in').onclick = () => {
+            const targetScale = getNextZoomLevel(1);
+            if (targetScale !== SCALE) animateZoom(targetScale);
+        };
+        document.getElementById('btn-zoom-out').onclick = () => {
+            const targetScale = getNextZoomLevel(-1);
+            if (targetScale !== SCALE) animateZoom(targetScale);
+        };
+        document.getElementById('btn-zoom-reset').onclick = () => {
+            currentZoomIndex = ZOOM_LEVELS.indexOf(8);
+            animateZoom(8);
+        };
+
+        document.getElementById('canvas-container').addEventListener('wheel', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+
+                // Get mouse position relative to container
+                const container = document.getElementById('canvas-container');
+                const rect = container.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                // Determine zoom direction (invert deltaY for natural feel)
+                const direction = e.deltaY < 0 ? 1 : -1;
+                const targetScale = getNextZoomLevel(direction);
+
+                if (targetScale !== SCALE) {
+                    animateZoom(targetScale, mouseX, mouseY);
+                }
+            }
+        }, { passive: false });
+
+        // Initialize: load saved project or show default
+        (async function init() {
+            // Try to restore last project
+            const savedProject = localStorage.getItem('floorplan_currentProject');
+            if (savedProject) {
+                try {
+                    const { id, name } = JSON.parse(savedProject);
+                    currentProjectId = id;
+                    currentProjectName = name;
+                } catch (e) {}
+            }
+            
+            await loadProjectsList();
+            
+            if (currentProjectId) {
+                // Load the most recent version
+                try {
+                    const res = await fetch(`/api/projects/${currentProjectId}/layouts`);
+                    const versions = await res.json();
+                    if (versions.length > 0) {
+                        await loadVersion(versions[0].filename);
+                        return;
+                    }
+                } catch (err) {}
+            }
+            
+            // Fallback to localStorage or defaults
+            if (!loadFromLocalStorage()) loadDefaults();
+            updateZoomDisplay();
+            updateUndoRedoButtons();
+            resize();
+            setTimeout(centerCanvasView, 100); // Center after layout settles
+        })();
+    </script>
+</body>
+</html>

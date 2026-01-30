@@ -341,6 +341,124 @@
             border-radius: 3px;
             border: 2px solid rgba(255,255,255,0.5);
         }
+
+        /* Section header with add button */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0 8px 0;
+        }
+        .section-header:first-child { margin-top: 0; }
+        .section-header h3 {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 600;
+            color: #86868b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-add-item {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 18px;
+            background: #007aff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-add-item:hover { background: #0068d6; }
+
+        /* Add item modal */
+        .add-item-modal .modal { width: 380px; }
+        .add-item-modal .form-group {
+            margin-bottom: 14px;
+        }
+        .add-item-modal .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #48484a;
+            margin-bottom: 4px;
+        }
+        .add-item-modal .form-group input[type="text"],
+        .add-item-modal .form-group input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d2d2d7;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .add-item-modal .form-group input:focus {
+            outline: none;
+            border-color: #007aff;
+        }
+        .add-item-modal .form-row {
+            display: flex;
+            gap: 12px;
+        }
+        .add-item-modal .form-row .form-group { flex: 1; }
+        .add-item-modal .color-picker-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .add-item-modal .color-picker-group input[type="color"] {
+            width: 40px;
+            height: 32px;
+            padding: 2px;
+            border: 1px solid #d2d2d7;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .add-item-modal .color-preview {
+            flex: 1;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #d2d2d7;
+        }
+        .add-item-modal .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #d2d2d7;
+        }
+        .add-item-modal .btn-cancel {
+            background: #f5f5f7;
+            color: #1d1d1f;
+            border: 1px solid #d2d2d7;
+        }
+        .add-item-modal .btn-add {
+            background: #007aff;
+            color: #fff;
+            border: 1px solid #007aff;
+        }
+        .add-item-modal .btn-add:hover { background: #0068d6; }
+
+        /* Custom item indicator */
+        .equipment-item.custom, .zone-item.custom {
+            position: relative;
+        }
+        .equipment-item.custom::after, .zone-item.custom::after {
+            content: '✦';
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 8px;
+            color: #007aff;
+        }
+        .equipment-item .item-emoji {
+            margin-right: 4px;
+        }
     </style>
 </head>
 <body>
@@ -389,35 +507,47 @@
     </div>
 
     <div id="sidebar">
-        <h3>Equipment</h3>
-        <div class="equipment-item" draggable="true" data-type="pot-tipper" data-w="36" data-h="36" data-color="#5856d6">Pot Tipper 164qt <span class="dims">36"</span></div>
-        <div class="equipment-item" draggable="true" data-type="mixer" data-w="24" data-h="24" data-color="#34c759">Mighty Mixer <span class="dims">24"</span></div>
-        <div class="equipment-item" draggable="true" data-type="cutter-loaf" data-w="48" data-h="36" data-color="#ff3b30">Loaf Cutter <span class="dims">48×36"</span></div>
-        <div class="equipment-item" draggable="true" data-type="cutter-bar" data-w="48" data-h="36" data-color="#ff9500">Bar Cutter <span class="dims">48×36"</span></div>
-        <div class="equipment-item" draggable="true" data-type="hoist" data-w="60" data-h="48" data-color="#af52de">Hoist System <span class="dims">60×48"</span></div>
-        <div class="equipment-item" draggable="true" data-type="mold" data-w="21" data-h="11" data-color="#007aff">Soap Mold <span class="dims">21×11"</span></div>
-        <div class="equipment-item" draggable="true" data-type="pallet" data-w="48" data-h="40" data-color="#8e8e93">Pallet <span class="dims">48×40"</span></div>
-        <div class="equipment-item" draggable="true" data-type="pallet-drying" data-w="48" data-h="40" data-color="#ff9500">Drying Pallet <span class="dims">48×40"</span></div>
-        <div class="equipment-item" draggable="true" data-type="oil-drum" data-w="24" data-h="24" data-color="#5856d6">Oil Barrel <span class="dims">24" dia</span></div>
-        <div class="equipment-item" draggable="true" data-type="table-6ft" data-w="72" data-h="30" data-color="#636366">Table 6ft <span class="dims">72×30"</span></div>
-        <div class="equipment-item" draggable="true" data-type="table-4ft" data-w="48" data-h="24" data-color="#636366">Table 4ft <span class="dims">48×24"</span></div>
-        <div class="equipment-item" draggable="true" data-type="scale" data-w="18" data-h="18" data-color="#30d158">Scale <span class="dims">18"</span></div>
-        <div class="equipment-item" draggable="true" data-type="desk" data-w="60" data-h="30" data-color="#aeaeb2">Desk <span class="dims">60×30"</span></div>
-        <div class="equipment-item" draggable="true" data-type="shelf" data-w="48" data-h="18" data-color="#8e8e93">Shelving <span class="dims">48×18"</span></div>
-        <div class="equipment-item" draggable="true" data-type="chair" data-w="18" data-h="18" data-color="#aeaeb2">Chair <span class="dims">18"</span></div>
+        <div class="section-header">
+            <h3>Equipment</h3>
+            <button class="btn-add-item" onclick="openAddEquipmentModal()" title="Add custom equipment">+</button>
+        </div>
+        <div id="equipment-list">
+            <div class="equipment-item" draggable="true" data-type="pot-tipper" data-w="36" data-h="36" data-color="#5856d6">Pot Tipper 164qt <span class="dims">36"</span></div>
+            <div class="equipment-item" draggable="true" data-type="mixer" data-w="24" data-h="24" data-color="#34c759">Mighty Mixer <span class="dims">24"</span></div>
+            <div class="equipment-item" draggable="true" data-type="cutter-loaf" data-w="48" data-h="36" data-color="#ff3b30">Loaf Cutter <span class="dims">48×36"</span></div>
+            <div class="equipment-item" draggable="true" data-type="cutter-bar" data-w="48" data-h="36" data-color="#ff9500">Bar Cutter <span class="dims">48×36"</span></div>
+            <div class="equipment-item" draggable="true" data-type="hoist" data-w="60" data-h="48" data-color="#af52de">Hoist System <span class="dims">60×48"</span></div>
+            <div class="equipment-item" draggable="true" data-type="mold" data-w="21" data-h="11" data-color="#007aff">Soap Mold <span class="dims">21×11"</span></div>
+            <div class="equipment-item" draggable="true" data-type="pallet" data-w="48" data-h="40" data-color="#8e8e93">Pallet <span class="dims">48×40"</span></div>
+            <div class="equipment-item" draggable="true" data-type="pallet-drying" data-w="48" data-h="40" data-color="#ff9500">Drying Pallet <span class="dims">48×40"</span></div>
+            <div class="equipment-item" draggable="true" data-type="oil-drum" data-w="24" data-h="24" data-color="#5856d6">Oil Barrel <span class="dims">24" dia</span></div>
+            <div class="equipment-item" draggable="true" data-type="table-6ft" data-w="72" data-h="30" data-color="#636366">Table 6ft <span class="dims">72×30"</span></div>
+            <div class="equipment-item" draggable="true" data-type="table-4ft" data-w="48" data-h="24" data-color="#636366">Table 4ft <span class="dims">48×24"</span></div>
+            <div class="equipment-item" draggable="true" data-type="scale" data-w="18" data-h="18" data-color="#30d158">Scale <span class="dims">18"</span></div>
+            <div class="equipment-item" draggable="true" data-type="desk" data-w="60" data-h="30" data-color="#aeaeb2">Desk <span class="dims">60×30"</span></div>
+            <div class="equipment-item" draggable="true" data-type="shelf" data-w="48" data-h="18" data-color="#8e8e93">Shelving <span class="dims">48×18"</span></div>
+            <div class="equipment-item" draggable="true" data-type="chair" data-w="18" data-h="18" data-color="#aeaeb2">Chair <span class="dims">18"</span></div>
+        </div>
+        <div id="custom-equipment-list"></div>
 
-        <h3>Zone Types</h3>
-        <div class="zone-item" data-zone="shipping" style="border-color: #ffcc00; background: rgba(255,204,0,0.15); color: #8a6d00;">Shipping</div>
-        <div class="zone-item" data-zone="boxing" style="border-color: #30d158; background: rgba(48,209,88,0.15); color: #1c7a32;">Boxing</div>
-        <div class="zone-item" data-zone="drying" style="border-color: #ff9500; background: rgba(255,149,0,0.15); color: #8a5000;">Drying</div>
-        <div class="zone-item" data-zone="cutting" style="border-color: #ff3b30; background: rgba(255,59,48,0.15); color: #8a2019;">Cutting</div>
-        <div class="zone-item" data-zone="molding" style="border-color: #af52de; background: rgba(175,82,222,0.15); color: #6c2d8a;">Molding</div>
-        <div class="zone-item" data-zone="mixing" style="border-color: #34c759; background: rgba(52,199,89,0.15); color: #1c7a32;">Mixing</div>
-        <div class="zone-item" data-zone="prep" style="border-color: #007aff; background: rgba(0,122,255,0.15); color: #004799;">Prep</div>
-        <div class="zone-item" data-zone="storage" style="border-color: #8e8e93; background: rgba(142,142,147,0.15); color: #48484a;">Storage</div>
-        <div class="zone-item" data-zone="office" style="border-color: #5856d6; background: rgba(88,86,214,0.15); color: #3634a3;">Office</div>
-        <div class="zone-item" data-zone="break" style="border-color: #ff2d55; background: rgba(255,45,85,0.15); color: #8a182e;">Break</div>
-        <div class="zone-item" data-zone="wash" style="border-color: #5ac8fa; background: rgba(90,200,250,0.15); color: #0077b3;">Wash/Cleaning</div>
+        <div class="section-header">
+            <h3>Zone Types</h3>
+            <button class="btn-add-item" onclick="openAddZoneModal()" title="Add custom zone type">+</button>
+        </div>
+        <div id="zone-list">
+            <div class="zone-item" data-zone="shipping" style="border-color: #ffcc00; background: rgba(255,204,0,0.15); color: #8a6d00;">Shipping</div>
+            <div class="zone-item" data-zone="boxing" style="border-color: #30d158; background: rgba(48,209,88,0.15); color: #1c7a32;">Boxing</div>
+            <div class="zone-item" data-zone="drying" style="border-color: #ff9500; background: rgba(255,149,0,0.15); color: #8a5000;">Drying</div>
+            <div class="zone-item" data-zone="cutting" style="border-color: #ff3b30; background: rgba(255,59,48,0.15); color: #8a2019;">Cutting</div>
+            <div class="zone-item" data-zone="molding" style="border-color: #af52de; background: rgba(175,82,222,0.15); color: #6c2d8a;">Molding</div>
+            <div class="zone-item" data-zone="mixing" style="border-color: #34c759; background: rgba(52,199,89,0.15); color: #1c7a32;">Mixing</div>
+            <div class="zone-item" data-zone="prep" style="border-color: #007aff; background: rgba(0,122,255,0.15); color: #004799;">Prep</div>
+            <div class="zone-item" data-zone="storage" style="border-color: #8e8e93; background: rgba(142,142,147,0.15); color: #48484a;">Storage</div>
+            <div class="zone-item" data-zone="office" style="border-color: #5856d6; background: rgba(88,86,214,0.15); color: #3634a3;">Office</div>
+            <div class="zone-item" data-zone="break" style="border-color: #ff2d55; background: rgba(255,45,85,0.15); color: #8a182e;">Break</div>
+            <div class="zone-item" data-zone="wash" style="border-color: #5ac8fa; background: rgba(90,200,250,0.15); color: #0077b3;">Wash/Cleaning</div>
+        </div>
+        <div id="custom-zone-list"></div>
     </div>
 
     <div id="canvas-container">
@@ -503,6 +633,74 @@
         </div>
     </div>
 
+    <!-- Add Equipment Modal -->
+    <div id="add-equipment-modal" class="modal-overlay add-item-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Custom Equipment</h2>
+                <button class="modal-close" onclick="closeAddEquipmentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="equip-name" placeholder="e.g., Conveyor Belt">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Width (inches)</label>
+                        <input type="number" id="equip-width" placeholder="24" min="1" max="240">
+                    </div>
+                    <div class="form-group">
+                        <label>Height (inches)</label>
+                        <input type="number" id="equip-height" placeholder="24" min="1" max="240">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="equip-color" value="#007aff">
+                        <div id="equip-color-preview" class="color-preview" style="background: #007aff;"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Icon/Emoji (optional)</label>
+                    <input type="text" id="equip-emoji" placeholder="e.g., 🏭 or ⚙️" maxlength="4">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="closeAddEquipmentModal()">Cancel</button>
+                    <button class="btn-add" onclick="addCustomEquipment()">Add Equipment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Zone Modal -->
+    <div id="add-zone-modal" class="modal-overlay add-item-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Add Custom Zone Type</h2>
+                <button class="modal-close" onclick="closeAddZoneModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Zone Name</label>
+                    <input type="text" id="zone-name" placeholder="e.g., Quality Control">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="zone-color" value="#007aff">
+                        <div id="zone-color-preview" class="color-preview" style="background: #007aff;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="closeAddZoneModal()">Cancel</button>
+                    <button class="btn-add" onclick="addCustomZone()">Add Zone Type</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let SCALE = 8;
         const MIN_SCALE = 4, MAX_SCALE = 32;
@@ -541,6 +739,10 @@
         const MAX_HISTORY = 50;
         let undoStack = [];
         let redoStack = [];
+
+        // Custom equipment and zones
+        let customEquipment = [];
+        let customZoneTypes = [];
 
         const ZONE_COLORS = {
             prep: { border: '#007aff', fill: 'rgba(0,122,255,0.2)', text: '#004799' },
@@ -1472,11 +1674,13 @@
                 const x = (e.clientX - rect.left - 20) / SCALE, y = (e.clientY - rect.top - 20) / SCALE;
                 const labels = { prep:'Ingredient Prep', mixing:'Mixing', molding:'Molding', cutting:'Cutting',
                     drying:'Drying Room', boxing:'Boxing', storage:'Storage', office:'Office', break:'Break', shipping:'Shipping', wash:'Wash/Cleaning' };
+                // Get label from ZONE_COLORS for custom zones, or from labels for built-in
+                const zoneLabel = ZONE_COLORS[currentZoneType]?.label || labels[currentZoneType] || currentZoneType;
                 const zw = Math.abs(Math.round(x) - zoneStart.x), zh = Math.abs(Math.round(y) - zoneStart.y);
                 if (zw > 1 && zh > 1) {
                     // Save state before creating zone
-                    saveState(`Create ${labels[currentZoneType] || currentZoneType} zone`);
-                    zones.push({ type: currentZoneType, label: labels[currentZoneType] || currentZoneType,
+                    saveState(`Create ${zoneLabel} zone`);
+                    zones.push({ type: currentZoneType, label: zoneLabel,
                         x: Math.min(zoneStart.x, Math.round(x)), y: Math.min(zoneStart.y, Math.round(y)), w: zw, h: zh });
                     saveToLocalStorage(); showSaveIndicator('✓ Saved');
                 }
@@ -1564,8 +1768,10 @@
                 const colors = ZONE_COLORS[currentZoneType];
                 const labels = { prep:'Ingredient Prep', mixing:'Mixing', molding:'Molding', cutting:'Cutting',
                     drying:'Drying Room', boxing:'Boxing', storage:'Storage', office:'Office', break:'Break', shipping:'Shipping', wash:'Wash/Cleaning' };
+                // Get label from colors.label for custom zones, or from labels object for built-in
+                const zoneName = colors?.label || labels[currentZoneType] || currentZoneType;
                 indicator.classList.remove('hidden');
-                modeText.textContent = `Drawing: ${labels[currentZoneType] || currentZoneType} zone`;
+                modeText.textContent = `Drawing: ${zoneName} zone`;
                 modeColor.style.background = colors?.border || '#007aff';
                 canvas.style.cursor = 'crosshair';
             } else if (currentTool === 'measure') {
@@ -1756,7 +1962,199 @@
                 switchProject(projectId, name);
             }
         });
-        
+
+        // ============ CUSTOM EQUIPMENT & ZONES ============
+
+        function loadCustomItems() {
+            const savedEquipment = localStorage.getItem('cheeky-custom-equipment');
+            const savedZones = localStorage.getItem('cheeky-custom-zones');
+
+            if (savedEquipment) {
+                customEquipment = JSON.parse(savedEquipment);
+                renderCustomEquipment();
+            }
+            if (savedZones) {
+                customZoneTypes = JSON.parse(savedZones);
+                renderCustomZones();
+            }
+        }
+
+        function saveCustomItems() {
+            localStorage.setItem('cheeky-custom-equipment', JSON.stringify(customEquipment));
+            localStorage.setItem('cheeky-custom-zones', JSON.stringify(customZoneTypes));
+        }
+
+        function renderCustomEquipment() {
+            const container = document.getElementById('custom-equipment-list');
+            container.innerHTML = customEquipment.map((item, idx) => {
+                const dims = item.w === item.h ? `${item.w}"` : `${item.w}×${item.h}"`;
+                const emoji = item.emoji ? `<span class="item-emoji">${item.emoji}</span>` : '';
+                return `<div class="equipment-item custom" draggable="true" data-type="custom-${idx}" data-w="${item.w}" data-h="${item.h}" data-color="${item.color}" data-custom-idx="${idx}">${emoji}${item.name} <span class="dims">${dims}</span></div>`;
+            }).join('');
+
+            // Add drag events for custom equipment
+            container.querySelectorAll('.equipment-item').forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('type', item.dataset.type);
+                    e.dataTransfer.setData('w', item.dataset.w);
+                    e.dataTransfer.setData('h', item.dataset.h);
+                    e.dataTransfer.setData('color', item.dataset.color);
+                });
+            });
+
+            // Update ITEM_NAMES for custom equipment
+            customEquipment.forEach((item, idx) => {
+                ITEM_NAMES[`custom-${idx}`] = item.name;
+            });
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function darkenColor(hex, factor = 0.4) {
+            const r = Math.round(parseInt(hex.slice(1, 3), 16) * factor);
+            const g = Math.round(parseInt(hex.slice(3, 5), 16) * factor);
+            const b = Math.round(parseInt(hex.slice(5, 7), 16) * factor);
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+
+        function renderCustomZones() {
+            const container = document.getElementById('custom-zone-list');
+            container.innerHTML = customZoneTypes.map((zone, idx) => {
+                const bgColor = hexToRgba(zone.color, 0.15);
+                const textColor = darkenColor(zone.color);
+                return `<div class="zone-item custom" data-zone="custom-zone-${idx}" data-custom-idx="${idx}" style="border-color: ${zone.color}; background: ${bgColor}; color: ${textColor};">${zone.name}</div>`;
+            }).join('');
+
+            // Add click events for custom zones
+            container.querySelectorAll('.zone-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.zone-item').forEach(z => z.classList.remove('selected'));
+                    item.classList.add('selected');
+                    currentZoneType = item.dataset.zone;
+                    currentTool = 'zone';
+                    updateToolButtons();
+                });
+            });
+
+            // Update ZONE_COLORS for custom zones
+            customZoneTypes.forEach((zone, idx) => {
+                ZONE_COLORS[`custom-zone-${idx}`] = {
+                    border: zone.color,
+                    fill: hexToRgba(zone.color, 0.2),
+                    text: darkenColor(zone.color),
+                    label: zone.name
+                };
+            });
+        }
+
+        // Add Equipment Modal
+        function openAddEquipmentModal() {
+            document.getElementById('add-equipment-modal').classList.add('active');
+            document.getElementById('equip-name').value = '';
+            document.getElementById('equip-width').value = '';
+            document.getElementById('equip-height').value = '';
+            document.getElementById('equip-color').value = '#007aff';
+            document.getElementById('equip-color-preview').style.background = '#007aff';
+            document.getElementById('equip-emoji').value = '';
+            document.getElementById('equip-name').focus();
+        }
+
+        function closeAddEquipmentModal() {
+            document.getElementById('add-equipment-modal').classList.remove('active');
+        }
+
+        function addCustomEquipment() {
+            const name = document.getElementById('equip-name').value.trim();
+            const width = parseInt(document.getElementById('equip-width').value);
+            const height = parseInt(document.getElementById('equip-height').value);
+            const color = document.getElementById('equip-color').value;
+            const emoji = document.getElementById('equip-emoji').value.trim();
+
+            if (!name) {
+                alert('Please enter a name for the equipment.');
+                return;
+            }
+            if (!width || !height || width < 1 || height < 1) {
+                alert('Please enter valid dimensions (width and height in inches).');
+                return;
+            }
+
+            customEquipment.push({ name, w: width, h: height, color, emoji });
+            saveCustomItems();
+            renderCustomEquipment();
+            closeAddEquipmentModal();
+            showSaveIndicator('✓ Equipment added');
+        }
+
+        // Add Zone Modal
+        function openAddZoneModal() {
+            document.getElementById('add-zone-modal').classList.add('active');
+            document.getElementById('zone-name').value = '';
+            document.getElementById('zone-color').value = '#007aff';
+            document.getElementById('zone-color-preview').style.background = '#007aff';
+            document.getElementById('zone-name').focus();
+        }
+
+        function closeAddZoneModal() {
+            document.getElementById('add-zone-modal').classList.remove('active');
+        }
+
+        function addCustomZone() {
+            const name = document.getElementById('zone-name').value.trim();
+            const color = document.getElementById('zone-color').value;
+
+            if (!name) {
+                alert('Please enter a name for the zone type.');
+                return;
+            }
+
+            customZoneTypes.push({ name, color });
+            saveCustomItems();
+            renderCustomZones();
+            closeAddZoneModal();
+            showSaveIndicator('✓ Zone type added');
+        }
+
+        // Color picker preview updates
+        document.getElementById('equip-color').addEventListener('input', (e) => {
+            document.getElementById('equip-color-preview').style.background = e.target.value;
+        });
+
+        document.getElementById('zone-color').addEventListener('input', (e) => {
+            document.getElementById('zone-color-preview').style.background = e.target.value;
+        });
+
+        // Modal overlay click to close
+        document.getElementById('add-equipment-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeAddEquipmentModal();
+        });
+
+        document.getElementById('add-zone-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeAddZoneModal();
+        });
+
+        // Enter key to submit modals
+        document.getElementById('add-equipment-modal').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addCustomEquipment();
+            }
+            if (e.key === 'Escape') closeAddEquipmentModal();
+        });
+
+        document.getElementById('add-zone-modal').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addCustomZone();
+            }
+            if (e.key === 'Escape') closeAddZoneModal();
+        });
+
         // ============ VERSION CONTROL FUNCTIONS ============
         
         async function loadVersionsList() {
@@ -1924,6 +2322,9 @@
 
         // Initialize: load saved project or show default
         (async function init() {
+            // Load custom equipment and zones first
+            loadCustomItems();
+
             // Try to restore last project
             const savedProject = localStorage.getItem('floorplan_currentProject');
             if (savedProject) {
@@ -1933,9 +2334,9 @@
                     currentProjectName = name;
                 } catch (e) {}
             }
-            
+
             await loadProjectsList();
-            
+
             if (currentProjectId) {
                 // Load the most recent version
                 try {
@@ -1947,7 +2348,7 @@
                     }
                 } catch (err) {}
             }
-            
+
             // Fallback to localStorage or defaults
             if (!loadFromLocalStorage()) loadDefaults();
             updateZoomDisplay();
